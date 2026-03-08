@@ -458,7 +458,7 @@ header{text-align:center;padding:20px 16px 14px;position:relative;}
 <div class="page" id="page-timeline">
   <div class="tl-instruction">
     A Resonator appears — click the box where they belong.<br>
-    <strong>Oldest (v1.0) at top</strong>, newest at bottom. Same version = <strong>alphabetical.</strong>
+    <strong>1.0 characters first</strong>, then ordered by <strong>exact banner release</strong>.
   </div>
   <div class="tl-current-wrap" id="tlCurrentWrap"></div>
   <div class="tl-boxes" id="tlBoxes"></div>
@@ -921,7 +921,25 @@ initGuess();
 const TL_TOTAL=10;
 let tlPool=[],tlBoxes=[],tlQueueIdx=0,tlDone=false;
 
-function tlCompare(a,b){if(a.version!==b.version)return a.version-b.version;return a.name.localeCompare(b.name);}
+// Exact banner release order from 1.1 onwards (1.0 chars all share order 0)
+const TL_BANNER_ORDER = [
+  "Jinhsi","Changli","Xiangli Yao","Zhezhi","Shorekeeper","Youhu","Camellya","Lumi",
+  "Carlotta","Roccia","Phoebe","Brant","Cantarella","Rover (Aero)","Zani","Ciaccona",
+  "Cartethyia","Lupa","Phrolova","Augusta","Iuno","Galbrena","Qiuyuan","Chisa","Buling",
+  "Lynae","Mornye","Aemeath","Luuk Herssen"
+];
+function tlOrder(c){
+  const idx = TL_BANNER_ORDER.indexOf(c.name);
+  // 1.0 chars not in the list get order -1 (all same, sorted alphabetically among themselves)
+  return idx === -1 ? -1 : idx;
+}
+function tlCompare(a,b){
+  const oa=tlOrder(a), ob=tlOrder(b);
+  if(oa===-1&&ob===-1) return a.name.localeCompare(b.name); // both 1.0 → alphabetical
+  if(oa===-1) return -1; // 1.0 always before post-1.0
+  if(ob===-1) return 1;
+  return oa-ob; // follow exact banner order
+}
 
 function initTimeline(){
   tlPool=shuffle(CHARS).slice(0,TL_TOTAL);tlBoxes=Array(TL_TOTAL).fill(null);tlQueueIdx=0;tlDone=false;
