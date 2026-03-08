@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WuWadle</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d18;--surface:#131625;--surface2:#191d30;--border:rgba(255,255,255,0.07);
+  --gold:#d4a843;--gold2:#f0c96a;--text:#e8e4dc;--text-dim:#5e5a52;
+  --green:#3d9966;--red:#b04040;--yellow:#b8862e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── HEADER ── */
+header{text-align:center;padding:20px 16px 0;border-bottom:1px solid rgba(212,168,67,0.12);}
+.logo{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,5vw,2.5rem);font-weight:900;
+  background:linear-gradient(135deg,var(--gold) 30%,var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 16px rgba(212,168,67,0.2));}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;justify-content:center;gap:6px;padding:14px 16px 0;flex-wrap:wrap;}
+.nav-tab{
+  padding:8px 22px;border-radius:8px 8px 0 0;
+  background:transparent;border:1px solid rgba(212,168,67,0.15);border-bottom:none;
+  color:var(--text-dim);font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+  transition:all 0.2s;
+}
+.nav-tab:hover{color:var(--text);background:rgba(212,168,67,0.05);}
+.nav-tab.active{background:var(--surface);border-color:rgba(212,168,67,0.35);color:var(--gold);}
+
+/* ── STREAK BAR ── */
+.streak-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:10px 16px 0;}
+.streak-stat{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
+.streak-val{
+  font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;line-height:1;
+  background:linear-gradient(135deg,var(--gold) 30%,var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  transition:transform 0.25s ease;
+}
+.streak-val.bump{transform:scale(1.35);}
+.streak-label{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);}
+.streak-divider{width:1px;height:36px;background:rgba(212,168,67,0.18);}
+.streak-fire{position:absolute;top:-6px;right:-14px;font-size:0.85rem;line-height:1;
+  animation:fireWiggle 0.7s ease infinite alternate;display:none;}
+@keyframes fireWiggle{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+
+/* ── PAGES ── */
+.page{display:none;max-width:1120px;margin:0 auto;padding:14px 10px 60px;}
+.page.active{display:block;}
+
+/* ── SHARED ── */
+.banner{margin-top:14px;border-radius:12px;padding:22px 20px;text-align:center;
+  background:var(--surface2);border:1px solid rgba(212,168,67,0.2);animation:fadeUp 0.4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.banner-icon{font-size:2rem;margin-bottom:8px;}
+.banner-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);margin-bottom:6px;}
+.banner-sub{color:var(--text-dim);font-size:0.88rem;margin-bottom:16px;}
+.new-btn{
+  padding:11px 32px;background:linear-gradient(135deg,#7a5a10,var(--gold));
+  border:none;border-radius:8px;color:#0b0d18;
+  font-family:'Lato',sans-serif;font-weight:700;font-size:0.82rem;
+  letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;
+  transition:all 0.2s;box-shadow:0 4px 14px rgba(212,168,67,0.2);
+}
+.new-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,67,0.35);}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── SEARCH ── */
+.search-wrap{position:relative;margin-top:14px;}
+.search-input{
+  width:100%;padding:13px 18px;
+  background:var(--surface);border:1px solid rgba(212,168,67,0.3);border-radius:10px;
+  color:var(--text);font-family:'Lato',sans-serif;font-size:0.92rem;outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.search-input:focus{border-color:rgba(212,168,67,0.6);box-shadow:0 0 0 3px rgba(212,168,67,0.08);}
+.search-input::placeholder{color:var(--text-dim);}
+.search-input:disabled{opacity:0.4;cursor:not-allowed;}
+.dropdown{
+  position:absolute;top:calc(100% + 5px);left:0;right:0;
+  background:var(--surface2);border:1px solid rgba(212,168,67,0.2);border-radius:10px;
+  z-index:50;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.55);
+  max-height:220px;overflow-y:auto;
+}
+.dropdown::-webkit-scrollbar{width:4px;}
+.dropdown::-webkit-scrollbar-thumb{background:rgba(212,168,67,0.2);border-radius:4px;}
+.dd-item{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;
+  cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.12s;
+}
+.dd-item:last-child{border-bottom:none;}
+.dd-item:hover{background:rgba(212,168,67,0.08);}
+.dd-item.used{opacity:0.28;pointer-events:none;text-decoration:line-through;}
+.el-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.dd-name{font-weight:700;font-size:0.88rem;}
+.dd-sub{margin-left:auto;font-size:0.72rem;color:var(--text-dim);white-space:nowrap;}
+
+/* ═══════════════════════════════
+   PAGE 1 — WUWADLE (GUESS)
+═══════════════════════════════ */
+.att-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;justify-content:center;}
+.att-label{font-size:0.65rem;color:var(--text-dim);letter-spacing:0.12em;text-transform:uppercase;}
+.att-dots{display:flex;gap:6px;}
+.att-dot{width:10px;height:10px;border-radius:50%;background:transparent;border:1px solid rgba(212,168,67,0.25);transition:all 0.3s;}
+.att-dot.used   {background:rgba(212,168,67,0.45);border-color:var(--gold);}
+.att-dot.correct{background:var(--green);border-color:var(--green);box-shadow:0 0 6px rgba(61,153,102,0.5);}
+.att-dot.fail   {background:var(--red);border-color:var(--red);box-shadow:0 0 6px rgba(176,64,64,0.4);}
+
+.table-scroll{overflow-x:auto;padding-bottom:6px;}
+.table-scroll::-webkit-scrollbar{height:4px;}
+.table-scroll::-webkit-scrollbar-thumb{background:rgba(212,168,67,0.2);border-radius:4px;}
+
+.col-headers,.guess-row{
+  display:grid;grid-template-columns:120px repeat(9,minmax(80px,1fr));
+  gap:5px;min-width:860px;
+}
+.col-headers{margin-bottom:5px;padding:0 2px;}
+.col-h{font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-dim);text-align:center;padding:4px 2px;}
+
+.guesses-area{display:flex;flex-direction:column;gap:5px;min-width:860px;}
+.guess-row{animation:rowIn 0.3s ease both;}
+@keyframes rowIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+
+.g-name{background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  display:flex;align-items:center;padding:0 8px;
+  font-size:0.68rem;font-weight:700;min-height:50px;line-height:1.2;word-break:break-word;}
+.g-cell{border-radius:7px;min-height:50px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:5px 4px;
+  text-align:center;font-size:0.62rem;font-weight:700;line-height:1.3;border:1px solid transparent;}
+.g-cell.correct{background:var(--green);box-shadow:0 0 10px rgba(61,153,102,0.35);}
+.g-cell.wrong  {background:var(--red);  box-shadow:0 0 10px rgba(176,64,64,0.3);}
+.g-cell.close  {background:var(--yellow);box-shadow:0 0 10px rgba(184,134,46,0.3);}
+
+.guess-row .g-cell:nth-child(2){animation:flip 0.35s 0.04s ease both}
+.guess-row .g-cell:nth-child(3){animation:flip 0.35s 0.09s ease both}
+.guess-row .g-cell:nth-child(4){animation:flip 0.35s 0.14s ease both}
+.guess-row .g-cell:nth-child(5){animation:flip 0.35s 0.19s ease both}
+.guess-row .g-cell:nth-child(6){animation:flip 0.35s 0.24s ease both}
+.guess-row .g-cell:nth-child(7){animation:flip 0.35s 0.29s ease both}
+.guess-row .g-cell:nth-child(8){animation:flip 0.35s 0.34s ease both}
+.guess-row .g-cell:nth-child(9){animation:flip 0.35s 0.39s ease both}
+.guess-row .g-cell:nth-child(10){animation:flip 0.35s 0.44s ease both}
+@keyframes flip{0%{transform:scaleY(0.2);opacity:0}60%{transform:scaleY(1.05)}100%{transform:scaleY(1);opacity:1}}
+
+.cell-val{font-size:0.62rem;}
+.cell-arrow{font-size:0.85rem;line-height:1;margin-top:2px;}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:18px;}
+.leg{display:flex;align-items:center;gap:6px;font-size:0.68rem;color:var(--text-dim);}
+.leg-dot{width:11px;height:11px;border-radius:3px;}
+.leg-dot.g{background:var(--green);}
+.leg-dot.r{background:var(--red);}
+.leg-dot.y{background:var(--yellow);}
+
+/* ═══════════════════════════════
+   PAGE 2 — TIMELINE
+═══════════════════════════════ */
+.tl-instruction{text-align:center;font-size:0.8rem;color:var(--text-dim);margin-bottom:14px;line-height:1.6;}
+.tl-instruction strong{color:var(--text);}
+.tl-current-wrap{display:flex;justify-content:center;margin-bottom:20px;}
+.tl-current{
+  background:var(--surface2);border:2px solid rgba(212,168,67,0.45);border-radius:14px;
+  padding:14px 28px;min-width:220px;text-align:center;
+  box-shadow:0 0 28px rgba(212,168,67,0.12);
+  animation:cardPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;position:relative;
+}
+.tl-current-label{font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;opacity:0.8;}
+.tl-current-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--text);}
+.tl-current-sub{font-size:0.72rem;color:var(--text-dim);margin-top:4px;}
+.tl-current-el{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+@keyframes cardPop{from{opacity:0;transform:scale(0.75)}to{opacity:1;transform:scale(1)}}
+.tl-boxes{display:grid;grid-template-columns:28px 1fr;gap:6px;max-width:480px;margin:0 auto;align-items:center;}
+.tl-box-num{font-family:'Playfair Display',serif;font-size:0.85rem;font-weight:900;color:var(--text-dim);text-align:right;padding-right:6px;}
+.tl-box{
+  min-height:54px;border-radius:10px;border:2px dashed rgba(212,168,67,0.18);
+  background:var(--surface);display:flex;align-items:center;padding:8px 14px;gap:10px;
+  cursor:pointer;transition:border-color 0.15s,background 0.15s,transform 0.1s;position:relative;overflow:hidden;
+}
+.tl-box:hover:not(.filled):not(.locked){border-color:rgba(212,168,67,0.6);background:rgba(212,168,67,0.06);transform:translateX(3px);}
+.tl-box.selecting-active:not(.filled):not(.locked){border-color:rgba(212,168,67,0.5);animation:pulse 1.4s ease infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,0.15)}50%{box-shadow:0 0 0 6px rgba(212,168,67,0)}}
+.tl-box.filled{cursor:default;}
+.tl-box.locked{cursor:default;opacity:0.5;}
+.tl-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;background:var(--box-el-color,transparent);transition:background 0.3s;}
+.tl-box.filled::before{background:var(--box-el-color,var(--gold));}
+.tl-box-empty-label{font-size:0.7rem;color:var(--text-dim);letter-spacing:0.08em;font-style:italic;}
+.tl-box-content{flex:1;}
+.tl-box-name{font-weight:700;font-size:0.88rem;color:var(--text);}
+.tl-box-ver{font-size:0.68rem;color:var(--text-dim);margin-top:2px;}
+.tl-box-status{font-size:1rem;margin-left:auto;flex-shrink:0;}
+.tl-box.result-correct{border-color:rgba(61,153,102,0.55)!important;background:rgba(61,153,102,0.1)!important;}
+.tl-box.result-wrong{border-color:rgba(176,64,64,0.55)!important;background:rgba(176,64,64,0.1)!important;}
+
+/* ═══════════════════════════════
+   PAGE 3 — SKILL QUIZ
+═══════════════════════════════ */
+.qz-wrap{max-width:560px;margin:0 auto;}
+.qz-streak-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:0 0 14px;}
+.qz-card{
+  background:var(--surface2);border:1px solid rgba(212,168,67,0.22);border-radius:16px;
+  padding:28px 24px 22px;text-align:center;margin-bottom:18px;position:relative;
+  box-shadow:0 4px 32px rgba(0,0,0,0.35);animation:cardPop 0.35s cubic-bezier(0.34,1.4,0.64,1) both;
+}
+.qz-type-badge{display:inline-block;font-size:0.58rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid rgba(212,168,67,0.3);color:var(--gold);background:rgba(212,168,67,0.07);margin-bottom:14px;}
+.qz-type-badge[data-type="Forte"]{background:rgba(160,128,255,0.15);color:#a080ff;border-color:rgba(160,128,255,0.3);}
+.qz-skill-name{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,3vw,1.7rem);font-weight:700;color:var(--text);line-height:1.25;}
+.qz-progress{font-size:0.65rem;color:var(--text-dim);letter-spacing:0.12em;text-transform:uppercase;margin-top:10px;}
+.qz-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.qz-choice{
+  padding:13px 14px;background:var(--surface);border:1px solid rgba(212,168,67,0.15);border-radius:10px;
+  color:var(--text);font-family:'Lato',sans-serif;font-size:0.88rem;font-weight:700;
+  cursor:pointer;transition:border-color 0.15s,background 0.15s,transform 0.1s;text-align:center;line-height:1.3;
+}
+.qz-choice:hover:not(:disabled){border-color:rgba(212,168,67,0.5);background:rgba(212,168,67,0.06);transform:translateY(-1px);}
+.qz-choice:disabled{cursor:default;}
+.qz-choice.correct{border-color:rgba(61,153,102,0.7)!important;background:rgba(61,153,102,0.15)!important;color:#6ed4a0;}
+.qz-choice.wrong{border-color:rgba(176,64,64,0.7)!important;background:rgba(176,64,64,0.13)!important;color:#e08080;}
+.qz-feedback{text-align:center;font-size:0.85rem;min-height:22px;margin-bottom:10px;font-style:italic;color:var(--text-dim);animation:fadeIn 0.25s ease;}
+.qz-feedback.correct{color:#6ed4a0;}
+.qz-feedback.wrong{color:#e08080;}
+.qz-next{width:100%;padding:13px;background:linear-gradient(135deg,#7a5a10,var(--gold));border:none;border-radius:10px;color:#0b0d18;font-family:'Lato',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(212,168,67,0.2);display:none;}
+.qz-next:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(212,168,67,0.35);}
+
+/* ═══════════════════════════════
+   PAGE 4 — ECHO GUESS
+═══════════════════════════════ */
+/* Reuse .att-row, .att-dots, .att-dot, .table-scroll, .legend, .search-wrap, .dropdown, .dd-item */
+/* Echo grid: Name + 4 cols (Type, Class, Region, Attribute hidden but compared) */
+.echo-col-headers,.echo-guess-row{
+  display:grid;
+  grid-template-columns:160px repeat(4,minmax(110px,1fr));
+  gap:5px;min-width:680px;
+}
+.echo-col-headers{margin-bottom:5px;padding:0 2px;}
+.echo-guesses-area{display:flex;flex-direction:column;gap:5px;min-width:680px;}
+
+/* attribute dot in dd for echo */
+.echo-attr-badge{
+  font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;
+  margin-left:auto;white-space:nowrap;
+}
+
+/* ═══════════════════════════════
+   PAGE 5 — ECHO QUIZ
+═══════════════════════════════ */
+.eq-mode-selector{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;}
+.eq-mode-btn{
+  padding:9px 20px;border-radius:20px;
+  background:var(--surface);border:1px solid rgba(212,168,67,0.2);
+  color:var(--text-dim);font-family:'Lato',sans-serif;font-size:0.75rem;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+  transition:all 0.2s;
+}
+.eq-mode-btn:hover{border-color:rgba(212,168,67,0.5);color:var(--text);background:rgba(212,168,67,0.06);}
+.eq-mode-btn.active{
+  background:linear-gradient(135deg,rgba(212,168,67,0.18),rgba(212,168,67,0.08));
+  border-color:var(--gold);color:var(--gold);
+  box-shadow:0 0 12px rgba(212,168,67,0.15);
+}
+.eq-mode-desc{text-align:center;font-size:0.72rem;color:var(--text-dim);margin-bottom:14px;min-height:18px;font-style:italic;}
+.eq-choice-fill{
+  width:100%;padding:13px 16px;background:var(--surface);
+  border:1px solid rgba(212,168,67,0.15);border-radius:10px;
+  color:var(--text);font-family:'Lato',sans-serif;font-size:0.92rem;font-weight:700;
+  cursor:pointer;transition:border-color 0.15s,background 0.15s,transform 0.1s;
+  text-align:left;
+}
+.eq-choice-fill:hover:not(:disabled){border-color:rgba(212,168,67,0.5);background:rgba(212,168,67,0.06);transform:translateX(3px);}
+.eq-choice-fill:disabled{cursor:default;}
+.eq-choice-fill.correct{border-color:rgba(61,153,102,0.7)!important;background:rgba(61,153,102,0.15)!important;color:#6ed4a0;}
+.eq-choice-fill.wrong{border-color:rgba(176,64,64,0.7)!important;background:rgba(176,64,64,0.13)!important;color:#e08080;}
+.eq-fill-answer-btn{
+  margin-top:10px;width:100%;padding:11px;
+  background:linear-gradient(135deg,#7a5a10,var(--gold));border:none;border-radius:10px;
+  color:#0b0d18;font-family:'Lato',sans-serif;font-weight:700;font-size:0.82rem;
+  letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;
+}
+.eq-fill-answer-btn:hover{transform:translateY(-1px);}
+/* ═══════════════════════════════
+   PAGE 6 — WORD HUNT
+═══════════════════════════════ */
+.wh-wrap{max-width:700px;margin:0 auto;padding:10px 6px 60px;}
+.wh-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.wh-stats{display:flex;gap:20px;align-items:center;}
+.wh-stat{display:flex;flex-direction:column;align-items:center;}
+.wh-stat-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;
+  background:linear-gradient(135deg,var(--gold) 30%,var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.wh-stat-lbl{font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);}
+.wh-grid-wrap{overflow-x:auto;margin-bottom:14px;}
+.wh-grid{
+  display:inline-grid;
+  grid-template-columns:repeat(20,1fr);
+  gap:2px;
+  user-select:none;
+  -webkit-user-select:none;
+  background:var(--surface);
+  border:1px solid rgba(212,168,67,0.15);
+  border-radius:10px;
+  padding:8px;
+  min-width:340px;
+  width:100%;
+  box-sizing:border-box;
+}
+.wh-cell{
+  aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Lato',sans-serif;font-size:clamp(0.5rem,1.8vw,0.78rem);font-weight:700;
+  color:var(--text-dim);border-radius:4px;cursor:pointer;
+  transition:background 0.1s,color 0.1s;
+  text-transform:uppercase;
+  border:1px solid transparent;
+}
+.wh-cell:hover{background:rgba(212,168,67,0.08);color:var(--text);}
+.wh-cell.selecting{background:rgba(212,168,67,0.25);color:var(--gold);border-color:rgba(212,168,67,0.4);}
+.wh-cell.found{color:#fff;border-color:transparent;}
+.wh-cell.found-0 {background:rgba(61,153,102,0.55);}
+.wh-cell.found-1 {background:rgba(90,120,220,0.55);}
+.wh-cell.found-2 {background:rgba(200,80,180,0.55);}
+.wh-cell.found-3 {background:rgba(220,140,40,0.55);}
+.wh-cell.found-4 {background:rgba(60,190,190,0.55);}
+.wh-cell.found-5 {background:rgba(220,70,70,0.55);}
+.wh-cell.found-6 {background:rgba(160,100,220,0.55);}
+.wh-cell.found-7 {background:rgba(80,180,80,0.55);}
+.wh-cell.found-8 {background:rgba(220,180,50,0.55);}
+.wh-cell.found-9 {background:rgba(50,160,220,0.55);}
+.wh-cell.found-10{background:rgba(220,100,100,0.55);}
+.wh-words{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.wh-word{
+  padding:5px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;
+  background:var(--surface2);border:1px solid rgba(212,168,67,0.18);color:var(--text);
+  transition:all 0.3s;letter-spacing:0.04em;
+}
+.wh-word.found{text-decoration:line-through;color:var(--text-dim);border-color:transparent;background:transparent;}
+.wh-complete{
+  text-align:center;padding:22px;background:var(--surface2);
+  border:1px solid rgba(212,168,67,0.3);border-radius:14px;
+  animation:fadeUp 0.4s ease;margin-top:10px;
+}
+.wh-complete-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold);margin-bottom:8px;}
+.wh-complete-sub{color:var(--text-dim);font-size:0.85rem;margin-bottom:16px;}
+.wh-size-selector{display:flex;gap:8px;justify-content:center;margin-bottom:14px;}
+.wh-size-btn{
+  padding:7px 18px;border-radius:20px;
+  background:var(--surface);border:1px solid rgba(212,168,67,0.2);
+  color:var(--text-dim);font-family:'Lato',sans-serif;font-size:0.75rem;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;
+}
+.wh-size-btn:hover{border-color:rgba(212,168,67,0.5);color:var(--text);}
+.wh-size-btn.active{background:rgba(212,168,67,0.12);border-color:var(--gold);color:var(--gold);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">WuWa</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-guess"    onclick="switchPage('guess')">🔍 Guess</button>
+    <button class="nav-tab"        id="tab-timeline" onclick="switchPage('timeline')">📅 Timeline</button>
+    <button class="nav-tab"        id="tab-quiz"     onclick="switchPage('quiz')">🎯 Skill Quiz</button>
+    <button class="nav-tab"        id="tab-echo"     onclick="switchPage('echo')">👻 Echo Guess</button>
+    <button class="nav-tab"        id="tab-echoquiz" onclick="switchPage('echoquiz')">🧠 Echo Quiz</button>
+    <button class="nav-tab"        id="tab-wordhunt" onclick="switchPage('wordhunt')">🔎 Word Hunt</button>
+  </div>
+</header>
+
+<!-- PAGE 1: RESONATOR GUESS -->
+<div class="page active" id="page-guess">
+  <div class="streak-bar" id="streakBar">
+    <div class="streak-stat">
+      <span class="streak-val" id="streakVal">0</span>
+      <span class="streak-label">Streak</span>
+      <span class="streak-fire" id="streakFire">🔥</span>
+    </div>
+    <div class="streak-divider"></div>
+    <div class="streak-stat">
+      <span class="streak-val" id="bestVal">0</span>
+      <span class="streak-label">Best</span>
+    </div>
+  </div>
+  <div class="att-row">
+    <span class="att-label">Attempts</span>
+    <div class="att-dots" id="attDots"></div>
+  </div>
+  <div class="table-scroll">
+    <div class="col-headers">
+      <div class="col-h">Name</div>
+      <div class="col-h">Rarity</div>
+      <div class="col-h">Attribute</div>
+      <div class="col-h">Weapon</div>
+      <div class="col-h">Region</div>
+      <div class="col-h">Version</div>
+      <div class="col-h">Flower</div>
+      <div class="col-h">Boss Mat</div>
+      <div class="col-h">Overlord</div>
+      <div class="col-h">Calamity</div>
+    </div>
+    <div class="guesses-area" id="guessesArea"></div>
+  </div>
+  <div id="inputArea">
+    <div class="search-wrap">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search for a Resonator..." autocomplete="off"/>
+      <div class="dropdown" id="dropdown" style="display:none"></div>
+    </div>
+  </div>
+  <div id="bannerArea"></div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot g"></div>Exact match</div>
+    <div class="leg"><div class="leg-dot r"></div>No match</div>
+    <div class="leg"><div class="leg-dot y"></div>Version close · ↑ higher · ↓ lower</div>
+  </div>
+</div>
+
+<!-- PAGE 2: TIMELINE -->
+<div class="page" id="page-timeline">
+  <div class="tl-instruction">
+    A Resonator appears — click the box where they belong.<br>
+    <strong>Oldest (v1.0) at top</strong>, newest at bottom. Same version = <strong>alphabetical.</strong>
+  </div>
+  <div class="tl-current-wrap" id="tlCurrentWrap"></div>
+  <div class="tl-boxes" id="tlBoxes"></div>
+  <div id="tlBanner"></div>
+</div>
+
+<!-- PAGE 3: SKILL QUIZ -->
+<div class="page" id="page-quiz">
+  <div class="qz-wrap">
+    <div class="qz-streak-bar">
+      <div class="streak-stat">
+        <span class="streak-val" id="qzStreakVal">0</span>
+        <span class="streak-label">Streak</span>
+        <span class="streak-fire" id="qzStreakFire">🔥</span>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-stat">
+        <span class="streak-val" id="qzBestVal">0</span>
+        <span class="streak-label">Best</span>
+      </div>
+    </div>
+    <div class="qz-card" id="qzCard">
+      <div class="qz-type-badge" id="qzTypeBadge"></div>
+      <div class="qz-skill-name" id="qzSkillName"></div>
+    </div>
+    <div class="qz-choices" id="qzChoices"></div>
+    <div class="qz-feedback" id="qzFeedback"></div>
+    <button class="qz-next" id="qzNext" onclick="qzNext()">Next Skill →</button>
+  </div>
+</div>
+
+<!-- PAGE 4: ECHO GUESS -->
+<div class="page" id="page-echo">
+  <div class="streak-bar">
+    <div class="streak-stat">
+      <span class="streak-val" id="echoStreakVal">0</span>
+      <span class="streak-label">Streak</span>
+      <span class="streak-fire" id="echoStreakFire">🔥</span>
+    </div>
+    <div class="streak-divider"></div>
+    <div class="streak-stat">
+      <span class="streak-val" id="echoBestVal">0</span>
+      <span class="streak-label">Best</span>
+    </div>
+  </div>
+
+  <div class="att-row">
+    <span class="att-label">Attempts</span>
+    <div class="att-dots" id="echoAttDots"></div>
+  </div>
+
+  <div class="table-scroll">
+    <div class="echo-col-headers">
+      <div class="col-h">Name</div>
+      <div class="col-h">Type</div>
+      <div class="col-h">Class</div>
+      <div class="col-h">Region</div>
+      <div class="col-h">Attribute</div>
+    </div>
+    <div class="echo-guesses-area" id="echoGuessesArea"></div>
+  </div>
+
+  <div class="search-wrap">
+    <input class="search-input" id="echoSearchInput" type="text" placeholder="Search for an Echo..." autocomplete="off"/>
+    <div class="dropdown" id="echoDropdown" style="display:none"></div>
+  </div>
+
+  <div id="echoBannerArea"></div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot g"></div>Exact match</div>
+    <div class="leg"><div class="leg-dot r"></div>No match</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// ELEMENT COLORS
+// ══════════════════════════════════════════
+const EL_COLORS = {
+  Spectro:'#e8d84a', Havoc:'#c060d8', Aero:'#4ad0c0',
+  Glacio:'#70b8f0',  Electro:'#9070f0', Fusion:'#f07840',
+  Physical:'#bbbbbb'
+};
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+// ══════════════════════════════════════════
+// RESONATOR DATA
+// ══════════════════════════════════════════
+const CHARS = [
+  {name:"Rover (Spectro)", rarity:5,element:"Spectro",weapon:"Sword",     version:1.0,region:"Unknown",     flower:"Pecok Flower",          boss:"Roaring Rock Fist",             overlord:"Feilian Beringal",    calamity:"Bell-Borne Geochelone"},
+  {name:"Rover (Havoc)",   rarity:5,element:"Havoc",  weapon:"Sword",     version:1.0,region:"Unknown",     flower:"Pecok Flower",          boss:"Roaring Rock Fist",             overlord:"Feilian Beringal",    calamity:"Bell-Borne Geochelone"},
+  {name:"Jiyan",           rarity:5,element:"Aero",   weapon:"Broadblade",version:1.0,region:"Huanglong",   flower:"Pecok Flower",          boss:"Roaring Rock Fist",             overlord:"Feilian Beringal",    calamity:"Bell-Borne Geochelone"},
+  {name:"Calcharo",        rarity:5,element:"Electro",weapon:"Broadblade",version:1.0,region:"Huanglong",   flower:"Iris",                  boss:"Thundering Tacet Core",         overlord:"Thundering Mephis",   calamity:"Dreamless"},
+  {name:"Encore",          rarity:5,element:"Fusion", weapon:"Rectifier", version:1.0,region:"Huanglong",   flower:"Belle Poppy",           boss:"Rage Tacet Core",               overlord:"Inferno Rider",       calamity:"Scar"},
+  {name:"Jianxin",         rarity:5,element:"Aero",   weapon:"Gauntlets", version:1.0,region:"Huanglong",   flower:"Coriolus",              boss:"Roaring Rock Fist",             overlord:"Feilian Beringal",    calamity:"Scar"},
+  {name:"Lingyang",        rarity:5,element:"Glacio", weapon:"Gauntlets", version:1.0,region:"Huanglong",   flower:"Lanternberry",          boss:"Gold-Dissolving Feather",       overlord:"Impermanence Heron",  calamity:"Jue"},
+  {name:"Verina",          rarity:5,element:"Spectro",weapon:"Rectifier", version:1.0,region:"Huanglong",   flower:"Belle Poppy",           boss:"Elegy Tacet Core",              overlord:"Mourning Aix",        calamity:"Bell-Borne Geochelone"},
+  {name:"Jinhsi",          rarity:5,element:"Spectro",weapon:"Broadblade",version:1.1,region:"Huanglong",   flower:"Loong's Pearl",         boss:"Elegy Tacet Core",              overlord:"Mourning Aix",        calamity:"Jue"},
+  {name:"Yinlin",          rarity:5,element:"Electro",weapon:"Rectifier", version:1.1,region:"Huanglong",   flower:"Coriolus",              boss:"Group Abomination Tacet Core",  overlord:"Mech Abomination",    calamity:"Dreamless"},
+  {name:"Zhezhi",          rarity:5,element:"Glacio", weapon:"Rectifier", version:1.2,region:"Huanglong",   flower:"Lanternberry",          boss:"Sound-Keeping Tacet Core",      overlord:"Lampylumen Myriad",   calamity:"Bell-Borne Geochelone"},
+  {name:"Xiangli Yao",     rarity:5,element:"Electro",weapon:"Gauntlets", version:1.2,region:"Huanglong",   flower:"Violet Coral",          boss:"Hidden Thunder Tacet Core",     overlord:"Tempest Mephis",      calamity:"Scar"},
+  {name:"Shorekeeper",     rarity:5,element:"Spectro",weapon:"Rectifier", version:1.3,region:"Black Shores",flower:"Nova",                  boss:"Topological Confinement",       overlord:"Fallacy of No Return",calamity:"Jue"},
+  {name:"Camellya",        rarity:5,element:"Havoc",  weapon:"Sword",     version:1.4,region:"Huanglong",   flower:"Nova",                  boss:"Topological Confinement",       overlord:"Fallacy of No Return",calamity:"Dreamless"},
+  {name:"Carlotta",        rarity:5,element:"Glacio", weapon:"Pistols",   version:2.0,region:"Rinascita",   flower:"Sword Acorus",          boss:"Platinum Core",                 overlord:"Sentry Construct",    calamity:"Hecate"},
+  {name:"Roccia",          rarity:5,element:"Havoc",  weapon:"Gauntlets", version:2.0,region:"Rinascita",   flower:"Firecracker Jewelweed", boss:"Cleansing Conch",               overlord:"Lorelei",             calamity:"Hecate"},
+  {name:"Phoebe",          rarity:5,element:"Spectro",weapon:"Rectifier", version:2.1,region:"Rinascita",   flower:"Firecracker Jewelweed", boss:"Cleansing Conch",               overlord:"Lorelei",             calamity:"Jue"},
+  {name:"Brant",           rarity:5,element:"Havoc",  weapon:"Sword",     version:2.1,region:"Rinascita",   flower:"Golden Fleece",         boss:"Blazing Bone",                  overlord:"Dragon of Dirge",     calamity:"Fleurdelys"},
+  {name:"Cantarella",      rarity:5,element:"Havoc",  weapon:"Rectifier", version:2.2,region:"Rinascita",   flower:"Seaside Cendrelis",     boss:"Cleansing Conch",               overlord:"Lorelei",             calamity:"Fleurdelys"},
+  {name:"Rover (Aero)",    rarity:5,element:"Aero",   weapon:"Sword",     version:2.2,region:"Unknown",     flower:"Pecok Flower",          boss:"Roaring Rock Fist",             overlord:"Feilian Beringal",    calamity:"Bell-Borne Geochelone"},
+  {name:"Zani",            rarity:5,element:"Spectro",weapon:"Gauntlets", version:2.3,region:"Rinascita",   flower:"Sword Acorus",          boss:"Platinum Core",                 overlord:"Sentry Construct",    calamity:"Hecate"},
+  {name:"Ciaccona",        rarity:5,element:"Aero",   weapon:"Rectifier", version:2.3,region:"Rinascita",   flower:"Golden Fleece",         boss:"Blazing Bone",                  overlord:"Dragon of Dirge",     calamity:"Fleurdelys"},
+  {name:"Cartethyia",      rarity:5,element:"Aero",   weapon:"Sword",     version:2.4,region:"Septimont",   flower:"Bamboo Iris",           boss:"Unfading Glory",                overlord:"Lioness of Glory",    calamity:"Fleurdelys"},
+  {name:"Lupa",            rarity:5,element:"Fusion", weapon:"Broadblade",version:2.4,region:"Septimont",   flower:"Bloodleaf Viburnum",    boss:"Unfading Glory",                overlord:"Lioness of Glory",    calamity:"Hecate"},
+  {name:"Phrolova",        rarity:5,element:"Havoc",  weapon:"Rectifier", version:2.5,region:"Rinascita",   flower:"Afterlife",             boss:"Truth in Lies",                 overlord:"Fenrico",             calamity:"Hecate"},
+  {name:"Augusta",         rarity:5,element:"Electro",weapon:"Broadblade",version:2.6,region:"Rinascita",   flower:"Luminous Calendula",    boss:"Blighted Crown of Puppet King", overlord:"False Sovereign",     calamity:"Fleurdelys"},
+  {name:"Iuno",            rarity:5,element:"Aero",   weapon:"Gauntlets", version:2.6,region:"Rinascita",   flower:"Sliverglow Bloom",      boss:"Abyssal Husk",                  overlord:"Lady of the Sea",     calamity:"Hecate"},
+  {name:"Galbrena",        rarity:5,element:"Fusion", weapon:"Pistols",   version:2.7,region:"Rinascita",   flower:"Stone Rose",            boss:"Blighted Crown of Puppet King", overlord:"False Sovereign",     calamity:"Threnodian: Leviathan"},
+  {name:"Qiuyuan",         rarity:5,element:"Aero",   weapon:"Sword",     version:2.7,region:"Huanglong",   flower:"Wintry Bell",           boss:"Truth in Lies",                 overlord:"Fenrico",             calamity:"Threnodian: Leviathan"},
+  {name:"Chisa",           rarity:5,element:"Havoc",  weapon:"Broadblade",version:2.8,region:"Rinascita",   flower:"Summer Flower",         boss:"Abyssal Husk",                  overlord:"Lady of the Sea",     calamity:"Threnodian: Leviathan"},
+  {name:"Lynae",           rarity:5,element:"Spectro",weapon:"Pistols",   version:3.0,region:"Lahai-Roi",   flower:"Rimewisp",              boss:"Suncoveter's Reach",            overlord:"Hyvatia",             calamity:"Dreamless"},
+  {name:"Mornye",          rarity:5,element:"Fusion", weapon:"Broadblade",version:3.0,region:"Lahai-Roi",   flower:"Gemini Spore",          boss:"Burning Judgment",              overlord:"Reactor Husk",        calamity:"Hecate"},
+  {name:"Aemeath",         rarity:5,element:"Fusion", weapon:"Sword",     version:3.1,region:"Lahai-Roi",   flower:"Moss Amber",            boss:"Our Choice",                    overlord:"Nameless Explorer",   calamity:"Sigillum"},
+  {name:"Luuk Herssen",    rarity:5,element:"Spectro",weapon:"Gauntlets", version:3.1,region:"Lahai-Roi",   flower:"Edelschnee",            boss:"Suncoveter's Reach",            overlord:"Hyvatia",             calamity:"Sigillum"},
+  {name:"Aalto",    rarity:4,element:"Aero",   weapon:"Pistols",   version:1.0,region:"Huanglong",flower:"Wintry Bell",        boss:"Strife Tacet Core",             overlord:"Crownless",           calamity:"Scar"},
+  {name:"Baizhi",   rarity:4,element:"Glacio", weapon:"Rectifier", version:1.0,region:"Huanglong",flower:"Wintry Bell",        boss:"Elegy Tacet Core",              overlord:"Mourning Aix",        calamity:"Bell-Borne Geochelone"},
+  {name:"Chixia",   rarity:4,element:"Fusion", weapon:"Pistols",   version:1.0,region:"Huanglong",flower:"Belle Poppy",        boss:"Rage Tacet Core",               overlord:"Inferno Rider",       calamity:"Scar"},
+  {name:"Danjin",   rarity:4,element:"Havoc",  weapon:"Sword",     version:1.0,region:"Huanglong",flower:"Belle Poppy",        boss:"Strife Tacet Core",             overlord:"Crownless",           calamity:"Dreamless"},
+  {name:"Mortefi",  rarity:4,element:"Fusion", weapon:"Pistols",   version:1.0,region:"Huanglong",flower:"Coriolus",           boss:"Hidden Thunder Tacet Core",     overlord:"Tempest Mephis",      calamity:"Dreamless"},
+  {name:"Sanhua",   rarity:4,element:"Glacio", weapon:"Sword",     version:1.0,region:"Huanglong",flower:"Wintry Bell",        boss:"Unbound Azure Pigment",         overlord:"Lampylumen Myriad",   calamity:"Bell-Borne Geochelone"},
+  {name:"Taoqi",    rarity:4,element:"Havoc",  weapon:"Broadblade",version:1.0,region:"Huanglong",flower:"Coriolus",           boss:"Strife Tacet Core",             overlord:"Crownless",           calamity:"Dreamless"},
+  {name:"Yangyang", rarity:4,element:"Aero",   weapon:"Sword",     version:1.0,region:"Huanglong",flower:"Coriolus",           boss:"Gold-Dissolving Feather",       overlord:"Impermanence Heron",  calamity:"Scar"},
+  {name:"Yuanwu",   rarity:4,element:"Electro",weapon:"Gauntlets", version:1.0,region:"Huanglong",flower:"Terraspawn Fungus",  boss:"Thundering Tacet Core",         overlord:"Thundering Mephis",   calamity:"Bell-Borne Geochelone"},
+  {name:"Youhu",    rarity:4,element:"Glacio", weapon:"Gauntlets", version:1.3,region:"Huanglong",flower:"Violet Coral",       boss:"Topological Confinement",       overlord:"Fallacy of No Return",calamity:"Jue"},
+  {name:"Lumi",     rarity:4,element:"Electro",weapon:"Broadblade",version:1.4,region:"Huanglong",flower:"Violet Coral",       boss:"Hidden Thunder Tacet Core",     overlord:"Tempest Mephis",      calamity:"Bell-Borne Geochelone"},
+  {name:"Buling",   rarity:4,element:"Electro",weapon:"Gauntlets", version:2.8,region:"Huanglong",flower:"Pecok Flower",       boss:"Blighted Crown of Puppet King", overlord:"False Sovereign",     calamity:"Threnodian: Leviathan"},
+];
+
+// ══════════════════════════════════════════
+// ECHO DATA (from enemy doc)
+// ══════════════════════════════════════════
+const ECHOES = [
+  {name:"Abyssal Gladius",         attribute:"Glacio",   type:"Dark Tide Influenced",      cls:"Elite",    region:"Rinascita"},
+  {name:"Abyssal Gunmaster",       attribute:"Glacio",   type:"Fractsidus",                cls:"Common",   region:"Huanglong"},
+  {name:"Abyssal Mercator",        attribute:"Glacio",   type:"Dark Tide Influenced",      cls:"Elite",    region:"Rinascita"},
+  {name:"Abyssal Patricius",       attribute:"Glacio",   type:"Dark Tide Influenced",      cls:"Elite",    region:"Rinascita"},
+  {name:"Abysscrest Gladiator",    attribute:"Havoc",    type:"Gladiator",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Aero Drake",              attribute:"Aero",     type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Aero Predator",           attribute:"Aero",     type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Aero Prism",              attribute:"Aero",     type:"Tranquilite",               cls:"Common",   region:"Rinascita"},
+  {name:"Autopuppet Scout",        attribute:"Glacio",   type:"Clamorling",                cls:"Elite",    region:"Huanglong"},
+  {name:"Baby Roseshroom",         attribute:"Havoc",    type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Baby Viridblaze Saurian", attribute:"Fusion",   type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Bell-Borne Geochelone",   attribute:"Glacio",   type:"Howler",                    cls:"Calamity", region:"Huanglong"},
+  {name:"Calcified Junrock",       attribute:"Physical", type:"Tranquilite",               cls:"Common",   region:"Rinascita"},
+  {name:"Capitaneus",              attribute:"Spectro",  type:"Dark Tide Influenced",      cls:"Elite",    region:"Rinascita"},
+  {name:"Carapace",                attribute:"Aero",     type:"Clamorling",                cls:"Elite",    region:"Huanglong"},
+  {name:"Chasm Guardian",          attribute:"Havoc",    type:"Whisperin",                 cls:"Elite",    region:"Huanglong"},
+  {name:"Chest Mimic",             attribute:"Spectro",  type:"Unknown",                   cls:"Common",   region:"Rinascita"},
+  {name:"Chirpuff",                attribute:"Aero",     type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Chop Chop",               attribute:"Fusion",   type:"Clamorling",                cls:"Elite",    region:"Rinascita"},
+  {name:"Chop Chop: Headless",     attribute:"Fusion",   type:"Clamorling",                cls:"Common",   region:"Rinascita"},
+  {name:"Chop Chop: Leftless",     attribute:"Spectro",  type:"Clamorling",                cls:"Common",   region:"Rinascita"},
+  {name:"Chop Chop: Rightless",    attribute:"Havoc",    type:"Clamorling",                cls:"Common",   region:"Rinascita"},
+  {name:"Clang Bang",              attribute:"Glacio",   type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Corrosaurus",             attribute:"Fusion",   type:"Dark Tide Creation",        cls:"Elite",    region:"Rinascita"},
+  {name:"Crownless",               attribute:"Havoc",    type:"Whisperin",                 cls:"Overlord", region:"Huanglong"},
+  {name:"Cruisewing",              attribute:"Spectro",  type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Cuddle Wuddle",           attribute:"Physical", type:"Clamorling",                cls:"Elite",    region:"Rinascita"},
+  {name:"Cyan-Feathered Heron",    attribute:"Aero",     type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Devotee's Flesh",         attribute:"Aero",     type:"Dark Tide Creation",        cls:"Common",   region:"Rinascita"},
+  {name:"Diamondclaw",             attribute:"Physical", type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Diggy Duggy",             attribute:"Physical", type:"Clamorling",                cls:"Common",   region:"Rinascita"},
+  {name:"Diurnus Knight",          attribute:"Spectro",  type:"Whisperin",                 cls:"Elite",    region:"Huanglong"},
+  {name:"Dragon of Dirge",         attribute:"Fusion",   type:"Unknown",                   cls:"Overlord", region:"Rinascita"},
+  {name:"Dreamless",               attribute:"Havoc",    type:"Whisperin",                 cls:"Calamity", region:"Huanglong"},
+  {name:"Dwarf Cassowary",         attribute:"Physical", type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Electro Drake",           attribute:"Electro",  type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Electro Predator",        attribute:"Electro",  type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Excarat",                 attribute:"Havoc",    type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Exile",                   attribute:"Fusion",   type:"Exile",                     cls:"Common",   region:"Huanglong"},
+  {name:"Exile Leader",            attribute:"Havoc",    type:"Exile",                     cls:"Elite",    region:"Huanglong"},
+  {name:"Exile Technician",        attribute:"Spectro",  type:"Exile",                     cls:"Elite",    region:"Huanglong"},
+  {name:"Fae Ignis",               attribute:"Havoc",    type:"Influenced by the Dark Tide",cls:"Common",  region:"Rinascita"},
+  {name:"Fallacy of No Return",    attribute:"Spectro",  type:"Unknown",                   cls:"Overlord", region:"Huanglong"},
+  {name:"Feilian Beringal",        attribute:"Aero",     type:"Howler",                    cls:"Overlord", region:"Huanglong"},
+  {name:"Fenrico",                 attribute:"Aero",     type:"Unknown",                   cls:"Overlord", region:"Rinascita"},
+  {name:"Fission Junrock",         attribute:"Physical", type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Flamecrest Gladiator",    attribute:"Fusion",   type:"Gladiator",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Flautist",                attribute:"Electro",  type:"Whisperin",                 cls:"Elite",    region:"Huanglong"},
+  {name:"Fleurdalys",              attribute:"Aero",     type:"Unknown",                   cls:"Calamity", region:"Rinascita"},
+  {name:"Flora Drone",             attribute:"Aero",     type:"Exoswarm",                  cls:"Common",   region:"Lahai-Roi"},
+  {name:"Flora Reindeer",          attribute:"Aero",     type:"Exoswarm",                  cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Fractsidus Cannoneer",    attribute:"Fusion",   type:"Fractsidus",                cls:"Common",   region:"Huanglong"},
+  {name:"Fractsidus Executioner",  attribute:"Havoc",    type:"Fractsidus",                cls:"Elite",    region:"Huanglong"},
+  {name:"Fractsidus Gunmaster",    attribute:"Physical", type:"Fractsidus",                cls:"Common",   region:"Huanglong"},
+  {name:"Fractsidus Inspector",    attribute:"Havoc",    type:"Fractsidus",                cls:"Elite",    region:"Rinascita"},
+  {name:"Fractsidus Thruster",     attribute:"Physical", type:"Fractsidus",                cls:"Common",   region:"Huanglong"},
+  {name:"Frostbite Coleoid",       attribute:"Glacio",   type:"Whisperin",                 cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Frostcrest Gladiator",    attribute:"Glacio",   type:"Gladiator",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Frostscourge Stalker",    attribute:"Glacio",   type:"Howler",                    cls:"Common",   region:"Rinascita"},
+  {name:"Fusion Drake",            attribute:"Fusion",   type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Fusion Dreadmane",        attribute:"Fusion",   type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Fusion Prism",            attribute:"Fusion",   type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Fusion Warrior",          attribute:"Fusion",   type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Galecrest Gladiator",     attribute:"Aero",     type:"Gladiator",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Galescourge Stalker",     attribute:"Aero",     type:"Howler",                    cls:"Common",   region:"Rinascita"},
+  {name:"Geospider S4",            attribute:"Spectro",  type:"Clamorling",                cls:"Common",   region:"Lahai-Roi"},
+  {name:"Glacio Drake",            attribute:"Glacio",   type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Glacio Dreadmane",        attribute:"Glacio",   type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Glacio Predator",         attribute:"Glacio",   type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Glacio Prism",            attribute:"Glacio",   type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Glommoth",                attribute:"Glacio",   type:"Exoswarm",                  cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Golden Junrock",          attribute:"Spectro",  type:"Tranquilite",               cls:"Common",   region:"Rinascita"},
+  {name:"Gulpuff",                 attribute:"Glacio",   type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Havoc Drake",             attribute:"Havoc",    type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Havoc Dreadmane",         attribute:"Havoc",    type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Havoc Prism",             attribute:"Havoc",    type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Havoc Warrior",           attribute:"Havoc",    type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Hecate",                  attribute:"Havoc",    type:"Unknown",                   cls:"Calamity", region:"Rinascita"},
+  {name:"Hoartoise",               attribute:"Glacio",   type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Hocus Pocus",             attribute:"Havoc",    type:"Clamorling",                cls:"Common",   region:"Rinascita"},
+  {name:"Hoochief Cyclone",        attribute:"Aero",     type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Hoochief Menace",         attribute:"Aero",     type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Hooscamp Clapperclaw",    attribute:"Physical", type:"Unknown",                   cls:"Common",   region:"Huanglong"},
+  {name:"Hooscamp Flinger",        attribute:"Physical", type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Hurriclaw",               attribute:"Aero",     type:"Howler",                    cls:"Elite",    region:"Rinascita"},
+  {name:"Hyvatia",                 attribute:"Spectro",  type:"Unknown",                   cls:"Overlord", region:"Lahai-Roi"},
+  {name:"Iceglint Dancer",         attribute:"Glacio",   type:"Whisperin",                 cls:"Common",   region:"Lahai-Roi"},
+  {name:"Impermanence Heron",      attribute:"Havoc",    type:"Howler",                    cls:"Overlord", region:"Huanglong"},
+  {name:"Inferno Rider",           attribute:"Fusion",   type:"Whisperin",                 cls:"Overlord", region:"Huanglong"},
+  {name:"Ironhoof",                attribute:"Fusion",   type:"Exoswarm",                  cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Jué",                     attribute:"Spectro",  type:"Sentinel",                  cls:"Calamity", region:"Huanglong"},
+  {name:"Kerasaur",                attribute:"Aero",     type:"Dark Tide Influenced",      cls:"Elite",    region:"Rinascita"},
+  {name:"Kronablight",             attribute:"Electro",  type:"Exoswarm",                  cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Kronkraclaw",             attribute:"Aero",     type:"Roya Outcasts",             cls:"Elite",    region:"Lahai-Roi"},
+  {name:"La Guardia",              attribute:"Physical", type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Lady of the Sea",         attribute:"Aero",     type:"Dark Tide Creation",        cls:"Overlord", region:"Rinascita"},
+  {name:"Lampylumen Myriad",       attribute:"Glacio",   type:"Howler",                    cls:"Overlord", region:"Huanglong"},
+  {name:"Lava Larva",              attribute:"Fusion",   type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Lightcrest Gladiator",    attribute:"Spectro",  type:"Gladiator",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Lightcrusher",            attribute:"Spectro",  type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Lioness of Glory",        attribute:"Fusion",   type:"Unknown",                   cls:"Overlord", region:"Rinascita"},
+  {name:"Lorelei",                 attribute:"Havoc",    type:"Unknown",                   cls:"Overlord", region:"Rinascita"},
+  {name:"Lottie Lost",             attribute:"Spectro",  type:"Clamorling",                cls:"Common",   region:"Rinascita"},
+  {name:"Lumiscale Construct",     attribute:"Glacio",   type:"Tranquilite",               cls:"Elite",    region:"Huanglong"},
+  {name:"Mech Abomination",        attribute:"Electro",  type:"Staticoid",                 cls:"Overlord", region:"Huanglong"},
+  {name:"Mining Drone",            attribute:"Havoc",    type:"Exoswarm",                  cls:"Common",   region:"Lahai-Roi"},
+  {name:"Mining Reindeer",         attribute:"Electro",  type:"Exoswarm",                  cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Mourning Aix",            attribute:"Spectro",  type:"Howler",                    cls:"Overlord", region:"Huanglong"},
+  {name:"Nameless Explorer",       attribute:"Aero",     type:"Unknown",                   cls:"Overlord", region:"Lahai-Roi"},
+  {name:"Nimbus Wraith",           attribute:"Spectro",  type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Nocturnus Knight",        attribute:"Havoc",    type:"Whisperin",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Outcast Executioner",     attribute:"Physical", type:"Roya Outcast",              cls:"Common",   region:"Lahai-Roi"},
+  {name:"Pilgrim's Shell",         attribute:"Aero",     type:"Dark Tide Creation",        cls:"Elite",    region:"Rinascita"},
+  {name:"Questless Knight",        attribute:"Electro",  type:"Whisperin",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Rage Against the Statue", attribute:"Spectro",  type:"Tranquilite",               cls:"Elite",    region:"Rinascita"},
+  {name:"Reactor Husk",            attribute:"Fusion",   type:"Unknown",                   cls:"Overlord", region:"Lahai-Roi"},
+  {name:"Rocksteady Guardian",     attribute:"Spectro",  type:"Whisperin",                 cls:"Elite",    region:"Huanglong"},
+  {name:"Roseshroom",              attribute:"Havoc",    type:"Tranquilite",               cls:"Elite",    region:"Huanglong"},
+  {name:"Sabercat Prowler",        attribute:"Havoc",    type:"Exoswarm",                  cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Sabercat Reaver",         attribute:"Fusion",   type:"Clamorling",                cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Sabyr Boar",              attribute:"Physical", type:"Howler",                    cls:"Common",   region:"Huanglong"},
+  {name:"Sacerdos",                attribute:"Aero",     type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Sagittario",              attribute:"Spectro",  type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Scar",                    attribute:"Fusion",   type:"Fractsidus",                cls:"Calamity", region:"Huanglong"},
+  {name:"Scar: Aberrant Nightmare",attribute:"Havoc",    type:"Fractsidus",                cls:"Calamity", region:"Huanglong"},
+  {name:"Sentry Construct",        attribute:"Glacio",   type:"Unknown",                   cls:"Overlord", region:"Rinascita"},
+  {name:"Shadow Stepper",          attribute:"Havoc",    type:"Whisperin",                 cls:"Common",   region:"Lahai-Roi"},
+  {name:"Sigillum",                attribute:"Spectro",  type:"Unknown",                   cls:"Calamity", region:"Lahai-Roi"},
+  {name:"Snip Snap",               attribute:"Fusion",   type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Spacetrek Explorer",      attribute:"Electro",  type:"Clamorling",                cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Spearback",               attribute:"Physical", type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Spectro Drake",           attribute:"Spectro",  type:"Dark Tide Influenced",      cls:"Common",   region:"Rinascita"},
+  {name:"Spectro Prism",           attribute:"Spectro",  type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Stonewall Bracer",        attribute:"Physical", type:"Tranquilite",               cls:"Elite",    region:"Huanglong"},
+  {name:"Tambourinist",            attribute:"Havoc",    type:"Whisperin",                 cls:"Elite",    region:"Huanglong"},
+  {name:"Tempest Mephis",          attribute:"Electro",  type:"Murmurin",                  cls:"Overlord", region:"Huanglong"},
+  {name:"The False Sovereign",     attribute:"Electro",  type:"Dark Tide Creation",        cls:"Overlord", region:"Rinascita"},
+  {name:"Threnodian: Leviathan",   attribute:"Havoc",    type:"Threnodian",                cls:"Calamity", region:"Rinascita"},
+  {name:"Thundercrest Gladiator",  attribute:"Electro",  type:"Gladiator",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Thundering Mephis",       attribute:"Electro",  type:"Whisperin",                 cls:"Overlord", region:"Huanglong"},
+  {name:"Thundstaff Outcast",      attribute:"Electro",  type:"Roya Outcast",              cls:"Common",   region:"Lahai-Roi"},
+  {name:"Tick Tack",               attribute:"Havoc",    type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Traffic Illuminator",     attribute:"Spectro",  type:"Clamorling",                cls:"Common",   region:"Huanglong"},
+  {name:"Tremor Warrior",          attribute:"Electro",  type:"Whisperin",                 cls:"Common",   region:"Lahai-Roi"},
+  {name:"Twin Nova: Collapsar Blade",attribute:"Electro",type:"Clamorling",                cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Twin Nova: Nebulous Cannon",attribute:"Spectro",type:"Clamorling",                cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Vanguard Junrock",        attribute:"Physical", type:"Tranquilite",               cls:"Common",   region:"Huanglong"},
+  {name:"Violet-Feathered Heron",  attribute:"Electro",  type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Viridblaze Saurian",      attribute:"Fusion",   type:"Howler",                    cls:"Elite",    region:"Huanglong"},
+  {name:"Vitreum Dancer",          attribute:"Electro",  type:"Whisperin",                 cls:"Elite",    region:"Rinascita"},
+  {name:"Voltscourge Stalker",     attribute:"Electro",  type:"Howler",                    cls:"Common",   region:"Rinascita"},
+  {name:"Whiff Whaff",             attribute:"Aero",     type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Windlash Coleoid",        attribute:"Aero",     type:"Whisperin",                 cls:"Elite",    region:"Lahai-Roi"},
+  {name:"Zig Zag",                 attribute:"Spectro",  type:"Whisperin",                 cls:"Common",   region:"Huanglong"},
+  {name:"Zip Zap",                 attribute:"Electro",  type:"Whisperin",                 cls:"Common",   region:"Lahai-Roi"},
+];
+
+// ══════════════════════════════════════════
+// SHARED STREAK
+// ══════════════════════════════════════════
+let streak=0,best=0;
+try{streak=parseInt(localStorage.getItem('wuwadle_streak')||'0',10);best=parseInt(localStorage.getItem('wuwadle_best')||'0',10);}catch(e){}
+function saveStreak(){try{localStorage.setItem('wuwadle_streak',streak);localStorage.setItem('wuwadle_best',best);}catch(e){}}
+function renderStreakUI(){
+  document.getElementById('streakVal').textContent=streak;
+  document.getElementById('bestVal').textContent=best;
+  document.getElementById('streakFire').style.display=streak>=2?'block':'none';
+}
+function bumpStreak(){const sv=document.getElementById('streakVal');sv.classList.remove('bump');void sv.offsetWidth;sv.classList.add('bump');setTimeout(()=>sv.classList.remove('bump'),350);}
+function winStreak(){streak++;if(streak>best)best=streak;saveStreak();bumpStreak();renderStreakUI();}
+function loseStreak(){streak=0;saveStreak();renderStreakUI();}
+renderStreakUI();
+
+// ══════════════════════════════════════════
+// PAGE SWITCHING
+// ══════════════════════════════════════════
+function switchPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// PAGE 1 — RESONATOR GUESS
+// ══════════════════════════════════════════
+const COLS=['rarity','element','weapon','region','version','flower','boss','overlord','calamity'];
+const MAX=5;
+let target,guesses,gameOver,usedNames;
+
+function pick(){return CHARS[Math.floor(Math.random()*CHARS.length)];}
+
+function initGuess(){
+  target=pick();guesses=[];gameOver=false;usedNames=new Set();
+  document.getElementById('guessesArea').innerHTML='';
+  document.getElementById('bannerArea').innerHTML='';
+  searchInput.disabled=false;searchInput.value='';dropdown.style.display='none';
+  renderDots();
+}
+
+function renderDots(){
+  document.getElementById('attDots').innerHTML=
+    Array.from({length:MAX},(_,i)=>`<div class="att-dot" id="d${i}"></div>`).join('');
+}
+function setDot(i,cls){const d=document.getElementById('d'+i);if(d)d.className='att-dot '+cls;}
+
+function compare(g){
+  const res={};
+  COLS.forEach(k=>{
+    if(k==='version'){
+      const diff=g.version-target.version;
+      if(diff===0)res[k]={val:g.version.toFixed(1),status:'correct',arrow:''};
+      else res[k]={val:g.version.toFixed(1),status:Math.abs(diff)<=0.5?'close':'wrong',arrow:diff>0?'↓':'↑'};
+    }else if(k==='rarity'){
+      res[k]={val:g.rarity+'★',status:g.rarity===target.rarity?'correct':'wrong',arrow:''};
+    }else{
+      res[k]={val:g[k],status:g[k]===target[k]?'correct':'wrong',arrow:''};
+    }
+  });
+  return res;
+}
+
+function renderGuessRow(g,res){
+  const area=document.getElementById('guessesArea');
+  const row=document.createElement('div');row.className='guess-row';
+  const nc=document.createElement('div');nc.className='g-name';nc.textContent=g.name;row.appendChild(nc);
+  COLS.forEach(k=>{
+    const r=res[k];const cell=document.createElement('div');cell.className=`g-cell ${r.status}`;
+    let html='';
+    if(k==='element'){const c=EL_COLORS[r.val]||'#fff';html=`<span class="cell-val" style="color:${c}">${r.val}</span>`;}
+    else html=`<span class="cell-val">${r.val}</span>`;
+    if(r.arrow)html+=`<span class="cell-arrow">${r.arrow}</span>`;
+    cell.innerHTML=html;row.appendChild(cell);
+  });
+  area.appendChild(row);
+}
+
+function submitGuess(char){
+  if(gameOver||usedNames.has(char.name))return;
+  usedNames.add(char.name);
+  const res=compare(char);guesses.push(char);renderGuessRow(char,res);
+  const won=COLS.every(k=>res[k].status==='correct');
+  setDot(guesses.length-1,won?'correct':'used');
+  if(won){winStreak();gameOver=true;showGuessBanner(true);return;}
+  if(guesses.length>=MAX){loseStreak();setDot(guesses.length-1,'fail');gameOver=true;showGuessBanner(false);}
+}
+
+function showGuessBanner(won){
+  disableSearch();
+  document.getElementById('bannerArea').innerHTML=won
+    ?`<div class="banner"><div class="banner-icon">✨</div>
+      <div class="banner-title">Correct!</div>
+      <div class="banner-sub">You found <strong>${target.name}</strong> in ${guesses.length} attempt${guesses.length!==1?'s':''}!
+        ${streak>1?`<br><span style="color:var(--gold)">🔥 ${streak} in a row!</span>`:''}</div>
+      <button class="new-btn" onclick="initGuess()">New Resonator</button></div>`
+    :`<div class="banner"><div class="banner-icon">💔</div>
+      <div class="banner-title">Out of Attempts</div>
+      <div class="banner-sub">The answer was <strong>${target.name}</strong> · ${target.element} · v${target.version.toFixed(1)}<br>
+        <span style="color:var(--red)">Streak reset</span></div>
+      <button class="new-btn" onclick="initGuess()">Try Again</button></div>`;
+}
+
+const searchInput=document.getElementById('searchInput');
+const dropdown=document.getElementById('dropdown');
+function renderCharDropdown(){
+  const q=searchInput.value.trim().toLowerCase();
+  const matches=CHARS.filter(c=>c.name.toLowerCase().includes(q));
+  if(!matches.length){dropdown.style.display='none';return;}
+  dropdown.innerHTML=matches.map(c=>{
+    const color=EL_COLORS[c.element]||'#fff';
+    const used=usedNames.has(c.name);
+    return `<div class="dd-item${used?' used':''}" data-name="${c.name.replace(/"/g,'&quot;')}">
+      <div class="el-dot" style="background:${color}"></div>
+      <span class="dd-name">${c.name}</span>
+    </div>`;
+  }).join('');
+  dropdown.querySelectorAll('.dd-item:not(.used)').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const char=CHARS.find(c=>c.name===item.dataset.name);
+      if(char){submitGuess(char);searchInput.value='';dropdown.style.display='none';searchInput.focus();}
+    });
+  });
+  dropdown.style.display='';
+}
+searchInput.addEventListener('focus', renderCharDropdown);
+searchInput.addEventListener('input', renderCharDropdown);
+searchInput.addEventListener('keydown',e=>{
+  if(e.key==='Escape')dropdown.style.display='none';
+  if(e.key==='Enter'){const f=dropdown.querySelector('.dd-item:not(.used)');if(f)f.click();}
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#page-guess .search-wrap'))dropdown.style.display='none';
+});
+function disableSearch(){searchInput.disabled=true;dropdown.style.display='none';}
+initGuess();
+
+// ══════════════════════════════════════════
+// PAGE 2 — TIMELINE
+// ══════════════════════════════════════════
+const TL_TOTAL=10;
+let tlPool=[],tlBoxes=[],tlQueueIdx=0,tlDone=false;
+
+function tlCompare(a,b){if(a.version!==b.version)return a.version-b.version;return a.name.localeCompare(b.name);}
+
+function initTimeline(){
+  tlPool=shuffle(CHARS).slice(0,TL_TOTAL);tlBoxes=Array(TL_TOTAL).fill(null);tlQueueIdx=0;tlDone=false;
+  document.getElementById('tlBanner').innerHTML='';renderTlCurrent();renderTlBoxes();
+}
+
+function renderTlCurrent(){
+  const wrap=document.getElementById('tlCurrentWrap');
+  if(tlDone||tlQueueIdx>=tlPool.length){wrap.innerHTML='';return;}
+  const c=tlPool[tlQueueIdx];const color=EL_COLORS[c.element]||'#fff';
+  wrap.innerHTML=`<div class="tl-current">
+    <div class="tl-current-label">▸ Place this Resonator</div>
+    <div class="tl-current-name">${c.name}</div>
+    <div class="tl-current-sub"><span class="tl-current-el" style="background:${color}"></span>${c.element} · ${'★'.repeat(c.rarity)}</div>
+  </div>`;
+}
+
+function renderTlBoxes(flashIdx,flashType){
+  const grid=document.getElementById('tlBoxes');grid.innerHTML='';
+  for(let i=0;i<TL_TOTAL;i++){
+    const num=document.createElement('div');num.className='tl-box-num';num.textContent=i+1;grid.appendChild(num);
+    const box=document.createElement('div');box.className='tl-box';
+    const slot=tlBoxes[i];
+    if(slot){
+      box.classList.add('filled');const color=EL_COLORS[slot.element]||'#fff';
+      box.style.setProperty('--box-el-color',color);
+      if(tlDone)box.classList.add(isSlotCorrect(i)?'result-correct':'result-wrong');
+      box.innerHTML=`<div class="tl-box-content"><div class="tl-box-name">${slot.name}</div>
+        <div class="tl-box-ver"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${color};margin-right:4px;vertical-align:middle"></span>v${slot.version.toFixed(1)} · ${slot.element}</div></div>
+        ${tlDone?`<div class="tl-box-status">${isSlotCorrect(i)?'✅':'❌'}</div>`:''}`;
+    }else{
+      if(!tlDone&&tlQueueIdx<tlPool.length){
+        box.classList.add('selecting-active');
+        box.innerHTML=`<span class="tl-box-empty-label">Click to place</span>`;
+        box.addEventListener('click',()=>placeInBox(i));
+      }else{box.classList.add('locked');box.innerHTML=`<span class="tl-box-empty-label">—</span>`;}
+    }
+    grid.appendChild(box);
+  }
+}
+
+function placeInBox(idx){
+  if(tlDone||tlQueueIdx>=tlPool.length)return;
+  if(tlBoxes[idx]!==null)return;
+  const incoming=tlPool[tlQueueIdx];tlBoxes[idx]=incoming;tlQueueIdx++;
+  const filledSlots=[];for(let i=0;i<TL_TOTAL;i++){if(tlBoxes[i]!==null)filledSlots.push(tlBoxes[i]);}
+  let valid=true;
+  for(let i=0;i<filledSlots.length-1;i++){if(tlCompare(filledSlots[i],filledSlots[i+1])>0){valid=false;break;}}
+  if(!valid){renderTlBoxes(idx,'bad');tlDone=true;setTimeout(()=>{showTlBanner(false);renderTlBoxes();},650);}
+  else{renderTlBoxes(idx,'ok');renderTlCurrent();if(tlQueueIdx===TL_TOTAL){tlDone=true;setTimeout(()=>showTlBanner(true),400);}}
+}
+
+function isSlotCorrect(idx){
+  const fullCorrect=[...tlPool].sort(tlCompare);
+  return tlBoxes[idx]&&fullCorrect[idx]&&tlBoxes[idx].name===fullCorrect[idx].name;
+}
+
+function showTlBanner(won){
+  const correct=tlBoxes.filter((b,i)=>b&&isSlotCorrect(i)).length;
+  document.getElementById('tlBanner').innerHTML=won
+    ?`<div class="banner" style="margin-top:16px"><div class="banner-icon">🏆</div>
+        <div class="banner-title">Perfect Order!</div>
+        <div class="banner-sub">All 10 placed correctly!</div>
+        <button class="new-btn" onclick="initTimeline()">New Round</button></div>`
+    :`<div class="banner" style="margin-top:16px"><div class="banner-icon">💔</div>
+        <div class="banner-title">Wrong order!</div>
+        <div class="banner-sub">Got <strong>${correct}</strong> of ${tlQueueIdx} right before the mistake.<br>
+          <span style="color:var(--text-dim);font-size:0.8rem;">Red = wrong placement.</span></div>
+        <button class="new-btn" onclick="initTimeline()">Try Again</button></div>`;
+}
+
+// ══════════════════════════════════════════
+// PAGE 3 — SKILL QUIZ
+// ══════════════════════════════════════════
+const SKILLS = [
+  {char:"Calcharo", skill:"Extermination Order", type:"Resonance Skill"},
+  {char:"Calcharo", skill:"Death Messenger", type:"Enhanced Skill"},
+  {char:"Calcharo", skill:"Necessary Extinction", type:"Resonance Liberation"},
+  {char:"Encore", skill:"Flaming Woolies", type:"Resonance Skill"},
+  {char:"Encore", skill:"Woolies Forge Ahead", type:"Enhanced Skill"},
+  {char:"Encore", skill:"Cosmos Rave", type:"Resonance Liberation"},
+  {char:"Jiyan", skill:"Windqueller", type:"Resonance Skill"},
+  {char:"Jiyan", skill:"Emerald Storm: Prelude", type:"Resonance Liberation"},
+  {char:"Jianxin", skill:"Calming Air", type:"Resonance Skill"},
+  {char:"Jianxin", skill:"Primordial Chi Spiral", type:"Enhanced Skill"},
+  {char:"Jianxin", skill:"Purification Blast", type:"Resonance Liberation"},
+  {char:"Lingyang", skill:"Whirling Lion", type:"Resonance Skill"},
+  {char:"Lingyang", skill:"Feral Roar", type:"Enhanced Skill"},
+  {char:"Lingyang", skill:"Lioness Taming", type:"Resonance Liberation"},
+  {char:"Verina", skill:"Botany Experiment", type:"Resonance Skill"},
+  {char:"Verina", skill:"Arboreal Afterglow", type:"Resonance Liberation"},
+  {char:"Yinlin", skill:"Chameleon Cipher", type:"Resonance Skill"},
+  {char:"Yinlin", skill:"Punishment Mark", type:"Enhanced Skill"},
+  {char:"Yinlin", skill:"Thundering Wrath", type:"Resonance Liberation"},
+  {char:"Rover (Spectro)", skill:"Resonance", type:"Resonance Skill"},
+  {char:"Rover (Spectro)", skill:"Sound Fragments", type:"Enhanced Skill"},
+  {char:"Rover (Spectro)", skill:"Echoing Symphony", type:"Resonance Liberation"},
+  {char:"Rover (Havoc)", skill:"Umbra Eclipse", type:"Resonance Skill"},
+  {char:"Rover (Havoc)", skill:"Dark Surge", type:"Enhanced Skill"},
+  {char:"Rover (Havoc)", skill:"Deadening Abyss", type:"Resonance Liberation"},
+  {char:"Aalto", skill:"Mist Avatar", type:"Resonance Skill"},
+  {char:"Aalto", skill:"Shift Trick", type:"Resonance Skill"},
+  {char:"Aalto", skill:"Mistcloak Dash", type:"Enhanced Skill"},
+  {char:"Aalto", skill:"Flower in the Mist", type:"Resonance Liberation"},
+  {char:"Baizhi", skill:"A Lil' Help", type:"Resonance Skill"},
+  {char:"Baizhi", skill:"You'tan Concentration", type:"Enhanced Skill"},
+  {char:"Baizhi", skill:"All Sense Clear", type:"Resonance Liberation"},
+  {char:"Chixia", skill:"Boom Boom", type:"Resonance Skill"},
+  {char:"Chixia", skill:"Burning Shot", type:"Enhanced Skill"},
+  {char:"Chixia", skill:"Forte: Heavenly Flames", type:"Resonance Liberation"},
+  {char:"Danjin", skill:"Crimson Fragment", type:"Resonance Skill"},
+  {char:"Danjin", skill:"Scarlet Flames", type:"Enhanced Skill"},
+  {char:"Danjin", skill:"Crimson Surge", type:"Resonance Liberation"},
+  {char:"Mortefi", skill:"Passionate Variation", type:"Resonance Skill"},
+  {char:"Mortefi", skill:"Mercato", type:"Enhanced Skill"},
+  {char:"Mortefi", skill:"Raging Finale", type:"Resonance Liberation"},
+  {char:"Sanhua", skill:"Eternal Frost", type:"Resonance Skill"},
+  {char:"Sanhua", skill:"Glacial Shatter", type:"Enhanced Skill"},
+  {char:"Sanhua", skill:"Glacial Gaze", type:"Resonance Liberation"},
+  {char:"Taoqi", skill:"Fortified Defense", type:"Resonance Skill"},
+  {char:"Taoqi", skill:"Resolving Caliber", type:"Enhanced Skill"},
+  {char:"Taoqi", skill:"Rockfall Roar", type:"Resonance Liberation"},
+  {char:"Yangyang", skill:"Feather Release", type:"Resonance Skill"},
+  {char:"Yangyang", skill:"Windchime", type:"Enhanced Skill"},
+  {char:"Yangyang", skill:"Divine Plume", type:"Resonance Liberation"},
+  {char:"Yuanwu", skill:"Thunderbolt", type:"Resonance Skill"},
+  {char:"Yuanwu", skill:"Wellspring", type:"Enhanced Skill"},
+  {char:"Yuanwu", skill:"Lands of Ancient Thunder", type:"Resonance Liberation"},
+  {char:"Jinhsi", skill:"Overflowing Radiance", type:"Resonance Skill"},
+  {char:"Jinhsi", skill:"Crescent Divinity", type:"Enhanced Skill"},
+  {char:"Jinhsi", skill:"Illuminous Epiphany", type:"Enhanced Skill"},
+  {char:"Jinhsi", skill:"Purge of Light", type:"Resonance Liberation"},
+  {char:"Changli", skill:"Tripartite Flames", type:"Resonance Skill"},
+  {char:"Changli", skill:"True Sight", type:"Enhanced Skill"},
+  {char:"Changli", skill:"Flaming Sacrifice", type:"Enhanced Skill"},
+  {char:"Changli", skill:"Radiance of Fealty", type:"Resonance Liberation"},
+  {char:"Zhezhi", skill:"Depiction", type:"Resonance Skill"},
+  {char:"Zhezhi", skill:"Stroke of Genius", type:"Enhanced Skill"},
+  {char:"Zhezhi", skill:"Creation's Zenith", type:"Enhanced Skill"},
+  {char:"Zhezhi", skill:"Living Canvas", type:"Resonance Liberation"},
+  {char:"Zhezhi", skill:"Spiritful Animation", type:"Alt Liberation"},
+  {char:"Xiangli Yao", skill:"Deduction", type:"Resonance Skill"},
+  {char:"Xiangli Yao", skill:"Decipher", type:"Enhanced Skill"},
+  {char:"Xiangli Yao", skill:"Divergence", type:"Enhanced Skill"},
+  {char:"Xiangli Yao", skill:"Law of Reigns", type:"Enhanced Skill"},
+  {char:"Xiangli Yao", skill:"Cogitation Model", type:"Resonance Liberation"},
+  {char:"Shorekeeper", skill:"Enlightenment", type:"Resonance Skill"},
+  {char:"Shorekeeper", skill:"Chaos Theory", type:"Enhanced Skill"},
+  {char:"Shorekeeper", skill:"End Loop", type:"Resonance Liberation"},
+  {char:"Shorekeeper", skill:"Stellarealm", type:"Alt Liberation"},
+  {char:"Youhu", skill:"Scroll Divination", type:"Resonance Skill"},
+  {char:"Youhu", skill:"Poetic Essence", type:"Enhanced Skill"},
+  {char:"Youhu", skill:"Auspices", type:"Enhanced Skill"},
+  {char:"Youhu", skill:"Mystic Armament", type:"Resonance Liberation"},
+  {char:"Camellya", skill:"Crimson Blossom", type:"Resonance Skill"},
+  {char:"Camellya", skill:"Floral Ravage", type:"Enhanced Skill"},
+  {char:"Camellya", skill:"Ephemeral", type:"Enhanced Skill"},
+  {char:"Camellya", skill:"Fervor Efflorescent", type:"Resonance Liberation"},
+  {char:"Lumi", skill:"Squeakie Shift", type:"Resonance Skill"},
+  {char:"Lumi", skill:"Red Light", type:"Enhanced Skill"},
+  {char:"Lumi", skill:"Squeakie Express", type:"Resonance Liberation"},
+  {char:"Carlotta", skill:"Art of Violence", type:"Resonance Skill"},
+  {char:"Carlotta", skill:"Chromatic Splendor", type:"Enhanced Skill"},
+  {char:"Carlotta", skill:"Era of New Wave", type:"Resonance Liberation"},
+  {char:"Carlotta", skill:"Fatal Finale", type:"Alt Liberation"},
+  {char:"Carlotta", skill:"Death Knell", type:"Alt Liberation"},
+  {char:"Roccia", skill:"Real Fantasy", type:"Resonance Skill"},
+  {char:"Roccia", skill:"Beyond Imagination", type:"Enhanced Skill"},
+  {char:"Roccia", skill:"Commedia Improvviso!", type:"Resonance Liberation"},
+  {char:"Phoebe", skill:"Ring of Mirrors", type:"Resonance Skill"},
+  {char:"Phoebe", skill:"Chamuel's Star", type:"Enhanced Skill"},
+  {char:"Phoebe", skill:"Dawn of Enlightenment", type:"Resonance Liberation"},
+  {char:"Brant", skill:"Anchor's Aweigh!", type:"Resonance Skill"},
+  {char:"Brant", skill:"Rhapsodic Fervor", type:"Enhanced Skill"},
+  {char:"Brant", skill:"Sunlit Rhapsody", type:"Resonance Liberation"},
+  {char:"Rover (Aero)", skill:"Mistchaser", type:"Resonance Skill"},
+  {char:"Rover (Aero)", skill:"Squall Blade", type:"Enhanced Skill"},
+  {char:"Rover (Aero)", skill:"Windhymn", type:"Resonance Liberation"},
+  {char:"Zani", skill:"Standard Defense Protocol", type:"Resonance Skill"},
+  {char:"Zani", skill:"Scorching Light", type:"Enhanced Skill"},
+  {char:"Zani", skill:"Rekindle", type:"Resonance Liberation"},
+  {char:"Zani", skill:"The Last Stand", type:"Alt Liberation"},
+  {char:"Ciaccona", skill:"Solo Concert", type:"Resonance Skill"},
+  {char:"Ciaccona", skill:"Singer's Triple Cadenza", type:"Resonance Liberation"},
+  {char:"Cartethyia", skill:"Sword to Answer Waves' Call", type:"Resonance Skill"},
+  {char:"Cartethyia", skill:"Blade of Howling Squall", type:"Enhanced Skill"},
+  {char:"Cartethyia", skill:"A Knight's Heartfelt Prayers", type:"Resonance Liberation"},
+  {char:"Lupa", skill:"Feral Fang", type:"Resonance Skill"},
+  {char:"Lupa", skill:"Shewolf's Hunt", type:"Enhanced Skill"},
+  {char:"Lupa", skill:"Dance With the Wolf", type:"Enhanced Skill"},
+  {char:"Lupa", skill:"Fire-Kissed Glory", type:"Resonance Liberation"},
+  {char:"Lupa", skill:"Burning Matchpoint", type:"Alt Liberation"},
+  {char:"Phrolova", skill:"Whispers in a Fleeting Dream", type:"Resonance Skill"},
+  {char:"Phrolova", skill:"Murmurs in a Haunting Dream", type:"Enhanced Skill"},
+  {char:"Phrolova", skill:"Waltz of Forsaken Depths", type:"Resonance Liberation"},
+  {char:"Phrolova", skill:"Scarlet Coda", type:"Alt Liberation"},
+  {char:"Cantarella", skill:"Graceful Step", type:"Resonance Skill"},
+  {char:"Cantarella", skill:"Flickering Reverie", type:"Enhanced Skill"},
+  {char:"Cantarella", skill:"Perception Drain", type:"Enhanced Skill"},
+  {char:"Cantarella", skill:"Beneath the Sea", type:"Resonance Liberation"},
+  {char:"Cantarella", skill:"Flowing Suffocation", type:"Alt Liberation"},
+  {char:"Cantarella", skill:"Abyssal Rebirth", type:"Alt Liberation"},
+  {char:"Augusta", skill:"Warrior's Blade", type:"Resonance Skill"},
+  {char:"Augusta", skill:"Undying Sunlight: Strike", type:"Enhanced Skill"},
+  {char:"Augusta", skill:"Sword of Eternal Oath", type:"Resonance Liberation"},
+  {char:"Augusta", skill:"Sublime is the Sun: Everbright Protector", type:"Alt Liberation"},
+  {char:"Galbrena", skill:"Encroach", type:"Resonance Skill"},
+  {char:"Galbrena", skill:"Ascent of Malice", type:"Enhanced Skill"},
+  {char:"Galbrena", skill:"Ravage", type:"Enhanced Skill"},
+  {char:"Galbrena", skill:"Purging Flame", type:"Alt Liberation"},
+  {char:"Qiuyuan", skill:"Straw Cape in Drizzly Rain", type:"Resonance Skill"},
+  {char:"Qiuyuan", skill:"Inksplash of Mind", type:"Enhanced Skill"},
+  {char:"Qiuyuan", skill:"Bamboo's Shade", type:"Enhanced Skill"},
+  {char:"Qiuyuan", skill:"Sundering Strike", type:"Resonance Liberation"},
+  {char:"Iuno", skill:"Closing Refrain", type:"Resonance Skill"},
+  {char:"Iuno", skill:"Unfinished Refrain", type:"Enhanced Skill"},
+  {char:"Iuno", skill:"Arc Beyond the Edge", type:"Enhanced Skill"},
+  {char:"Iuno", skill:"Ebb and Flow", type:"Alt Liberation"},
+  {char:"Chisa", skill:"Eye of Unraveling", type:"Resonance Skill"},
+  {char:"Chisa", skill:"Serrated Loop", type:"Enhanced Skill"},
+  {char:"Chisa", skill:"Moment of Nihility", type:"Resonance Liberation"},
+  {char:"Chisa", skill:"Sawring – Blitz", type:"Alt Liberation"},
+  {char:"Buling", skill:"In Shadow Thunder Stirs", type:"Resonance Skill"},
+  {char:"Buling", skill:"Five Thunders Spell Array", type:"Enhanced Skill"},
+  {char:"Buling", skill:"Flashing Thunder Spell", type:"Resonance Liberation"},
+  {char:"Buling", skill:"Flashing Thunder Spell: Harmony", type:"Alt Liberation"},
+  {char:"Lynae", skill:"Lynae-Style Palettes", type:"Resonance Skill"},
+  {char:"Lynae", skill:"Additive Color", type:"Enhanced Skill"},
+  {char:"Lynae", skill:"Spark Collision", type:"Enhanced Skill"},
+  {char:"Lynae", skill:"Graffiti Blast", type:"Enhanced Skill"},
+  {char:"Lynae", skill:"Prismatic Overblast", type:"Resonance Liberation"},
+  {char:"Mornye", skill:"Expectation Error", type:"Resonance Skill"},
+  {char:"Mornye", skill:"Distributed Array", type:"Enhanced Skill"},
+  {char:"Mornye", skill:"Geopotential Shift", type:"Enhanced Skill"},
+  {char:"Mornye", skill:"Inversion", type:"Enhanced Skill"},
+  {char:"Mornye", skill:"Critical Protocol", type:"Resonance Liberation"},
+  {char:"Mornye", skill:"High Syntony Field", type:"Alt Liberation"},
+  {char:"Aemeath", skill:"Seraphic Duet", type:"Resonance Skill"},
+  {char:"Aemeath", skill:"Duet of Seraphic Plumes: Overture", type:"Enhanced Skill"},
+  {char:"Aemeath", skill:"Heavenfall Edict: Overdrive", type:"Resonance Liberation"},
+  {char:"Aemeath", skill:"Heavenfall Edict: Finale", type:"Alt Liberation"},
+  {char:"Luuk Herssen", skill:"Aureole of Execution: Ring", type:"Resonance Skill"},
+  {char:"Luuk Herssen", skill:"Aureole of Execution: Breach", type:"Enhanced Skill"},
+  {char:"Luuk Herssen", skill:"Glare", type:"Enhanced Skill"},
+  {char:"Luuk Herssen", skill:"Rewritten in Winter's Margins", type:"Resonance Liberation"},
+  {char:"Calcharo",      skill:"Killing Intent",            type:"Forte"},
+  {char:"Encore",        skill:"Cosmos Rave",               type:"Forte"},
+  {char:"Jiyan",         skill:"Qingloong Mode",            type:"Forte"},
+  {char:"Jianxin",       skill:"Chi Vortex",                type:"Forte"},
+  {char:"Lingyang",      skill:"Lioness Taming",            type:"Forte"},
+  {char:"Yinlin",        skill:"Zapstring",                 type:"Forte"},
+  {char:"Rover (Spectro)",skill:"Diminutive Sound",         type:"Forte"},
+  {char:"Rover (Havoc)", skill:"Dark Surge",                type:"Forte"},
+  {char:"Aalto",         skill:"Mistcloak",                 type:"Forte"},
+  {char:"Baizhi",        skill:"You'tan",                   type:"Forte"},
+  {char:"Danjin",        skill:"Crimson Surge",             type:"Forte"},
+  {char:"Mortefi",       skill:"Annoyance",                 type:"Forte"},
+  {char:"Sanhua",        skill:"Clarity",                   type:"Forte"},
+  {char:"Taoqi",         skill:"Parry",                     type:"Forte"},
+  {char:"Yangyang",      skill:"Declination",               type:"Forte"},
+  {char:"Yuanwu",        skill:"Wellspring",                type:"Forte"},
+  {char:"Jinhsi",        skill:"Incandescence",             type:"Forte"},
+  {char:"Jinhsi",        skill:"Incarnation",               type:"Forte"},
+  {char:"Changli",       skill:"Enflamement",               type:"Forte"},
+  {char:"Zhezhi",        skill:"Afflatus",                  type:"Forte"},
+  {char:"Zhezhi",        skill:"Ink and Wash",              type:"Forte"},
+  {char:"Xiangli Yao",   skill:"Performance Capacity",      type:"Forte"},
+  {char:"Shorekeeper",   skill:"Illation",                  type:"Forte"},
+  {char:"Shorekeeper",   skill:"Empirical Data",            type:"Forte"},
+  {char:"Youhu",         skill:"Auspices",                  type:"Forte"},
+  {char:"Camellya",      skill:"Crimson Pistils",           type:"Forte"},
+  {char:"Camellya",      skill:"Budding Mode",              type:"Forte"},
+  {char:"Lumi",          skill:"Traffic Light",             type:"Forte"},
+  {char:"Carlotta",      skill:"Lethal Repertoire",         type:"Forte"},
+  {char:"Roccia",        skill:"Imagination",               type:"Forte"},
+  {char:"Phoebe",        skill:"Absolution",                type:"Forte"},
+  {char:"Phoebe",        skill:"Confession",                type:"Forte"},
+  {char:"Brant",         skill:"Aflame",                    type:"Forte"},
+  {char:"Rover (Aero)",  skill:"Gale Force",                type:"Forte"},
+  {char:"Rover (Aero)",  skill:"Zephyr Wellspring",         type:"Forte"},
+  {char:"Zani",          skill:"Inferno Mode",              type:"Forte"},
+  {char:"Zani",          skill:"Redundant Energy",          type:"Forte"},
+  {char:"Cartethyia",    skill:"Winged Storm",              type:"Forte"},
+  {char:"Lupa",          skill:"Wolfaith",                  type:"Forte"},
+  {char:"Lupa",          skill:"Wolflame",                  type:"Forte"},
+  {char:"Phrolova",      skill:"Resolving Chord",           type:"Forte"},
+  {char:"Phrolova",      skill:"Volatile Notes",            type:"Forte"},
+  {char:"Cantarella",    skill:"Trance",                    type:"Forte"},
+  {char:"Cantarella",    skill:"Mirage",                    type:"Forte"},
+  {char:"Augusta",       skill:"Ascendancy",                type:"Forte"},
+  {char:"Augusta",       skill:"Prowess",                   type:"Forte"},
+  {char:"Augusta",       skill:"Majesty",                   type:"Forte"},
+  {char:"Galbrena",      skill:"Afterflame",                type:"Forte"},
+  {char:"Galbrena",      skill:"Demon Hypostasis",          type:"Forte"},
+  {char:"Qiuyuan",       skill:"Swordster's Soliloquy",     type:"Forte"},
+  {char:"Iuno",          skill:"Half Moon",                 type:"Forte"},
+  {char:"Iuno",          skill:"Absolute Fullness",         type:"Forte"},
+  {char:"Chisa",         skill:"Chainsaw Mode",             type:"Forte"},
+  {char:"Chisa",         skill:"Thread of Bane",            type:"Forte"},
+  {char:"Buling",        skill:"Minor Yin",                 type:"Forte"},
+  {char:"Buling",        skill:"Minor Yang",                type:"Forte"},
+  {char:"Lynae",         skill:"Kaleidoscopic Parade",      type:"Forte"},
+  {char:"Lynae",         skill:"Lumiflow",                  type:"Forte"},
+  {char:"Mornye",        skill:"Relative Momentum",         type:"Forte"},
+  {char:"Mornye",        skill:"Observation Markers",       type:"Forte"},
+  {char:"Aemeath",       skill:"Synchronization Rate",      type:"Forte"},
+  {char:"Aemeath",       skill:"Resonance Rate",            type:"Forte"},
+  {char:"Luuk Herssen",  skill:"Aureate Judge",             type:"Forte"},
+  {char:"Luuk Herssen",  skill:"Gavel of Earthshaker",      type:"Forte"},
+  {char:"Luuk Herssen",  skill:"Ichor Deposit",             type:"Forte"},
+  {char:"Chixia",        skill:"Heroic Bullets",            type:"Forte"},
+  {char:"Ciaccona",      skill:"Quadruple Downbeat",        type:"Forte"},
+  {char:"Verina",        skill:"Starflower Blooms",         type:"Forte"},
+];
+
+const QZ_CHARS=[...new Set(SKILLS.map(s=>s.char))];
+let qzStreak=0,qzBest=0;
+try{qzStreak=parseInt(localStorage.getItem('wuwadle_qz_streak')||'0',10);qzBest=parseInt(localStorage.getItem('wuwadle_qz_best')||'0',10);}catch(e){}
+function saveQzStreak(){try{localStorage.setItem('wuwadle_qz_streak',qzStreak);localStorage.setItem('wuwadle_qz_best',qzBest);}catch(e){}}
+function renderQzStreak(){document.getElementById('qzStreakVal').textContent=qzStreak;document.getElementById('qzBestVal').textContent=qzBest;document.getElementById('qzStreakFire').style.display=qzStreak>=2?'block':'none';}
+function bumpQzStreak(){const sv=document.getElementById('qzStreakVal');sv.classList.remove('bump');void sv.offsetWidth;sv.classList.add('bump');setTimeout(()=>sv.classList.remove('bump'),350);}
+let qzCurrent=null,qzAnswered=false;
+function initQuiz(){qzAnswered=false;renderQzStreak();qzShowNext();}
+function qzShowNext(){
+  qzCurrent=SKILLS[Math.floor(Math.random()*SKILLS.length)];qzAnswered=false;
+  const badge=document.getElementById('qzTypeBadge');badge.textContent=qzCurrent.type;badge.dataset.type=qzCurrent.type;
+  document.getElementById('qzSkillName').textContent=qzCurrent.skill;
+  document.getElementById('qzFeedback').textContent='';document.getElementById('qzFeedback').className='qz-feedback';
+  document.getElementById('qzNext').style.display='none';
+  const card=document.getElementById('qzCard');card.style.animation='none';void card.offsetWidth;card.style.animation='';
+  const wrongPool=shuffle(QZ_CHARS.filter(c=>c!==qzCurrent.char));
+  const choices=shuffle([qzCurrent.char,...wrongPool.slice(0,7)]);
+  const grid=document.getElementById('qzChoices');grid.innerHTML='';
+  choices.forEach(ch=>{
+    const btn=document.createElement('button');btn.className='qz-choice';btn.textContent=ch;
+    btn.addEventListener('click',()=>qzAnswer(ch,btn));grid.appendChild(btn);
+  });
+}
+function qzAnswer(chosen,btn){
+  if(qzAnswered)return;qzAnswered=true;
+  const correct=chosen===qzCurrent.char;
+  const fb=document.getElementById('qzFeedback');
+  document.querySelectorAll('.qz-choice').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===qzCurrent.char)b.classList.add('correct');
+    else if(b===btn&&!correct)b.classList.add('wrong');
+  });
+  if(correct){qzStreak++;if(qzStreak>qzBest)qzBest=qzStreak;saveQzStreak();bumpQzStreak();renderQzStreak();fb.textContent='✨ Correct!';fb.className='qz-feedback correct';setTimeout(()=>qzShowNext(),900);}
+  else{qzStreak=0;saveQzStreak();renderQzStreak();fb.textContent=`❌ It was ${qzCurrent.char}`;fb.className='qz-feedback wrong';setTimeout(()=>qzShowNext(),1200);}
+}
+function qzNext(){qzShowNext();}
+
+// ══════════════════════════════════════════
+// PAGE 4 — ECHO GUESS
+// ══════════════════════════════════════════
+const ECHO_MAX = 5;
+const ECHO_COLS = ['type','cls','region','attribute']; // attribute shown last, all compared
+let echoTarget, echoGuesses, echoGameOver, echoUsedNames;
+let echoStreak=0, echoBest=0;
+try{echoStreak=parseInt(localStorage.getItem('wuwadle_echo_streak')||'0',10);echoBest=parseInt(localStorage.getItem('wuwadle_echo_best')||'0',10);}catch(e){}
+
+function saveEchoStreak(){try{localStorage.setItem('wuwadle_echo_streak',echoStreak);localStorage.setItem('wuwadle_echo_best',echoBest);}catch(e){}}
+function renderEchoStreakUI(){
+  document.getElementById('echoStreakVal').textContent=echoStreak;
+  document.getElementById('echoBestVal').textContent=echoBest;
+  document.getElementById('echoStreakFire').style.display=echoStreak>=2?'block':'none';
+}
+function bumpEchoStreak(){const sv=document.getElementById('echoStreakVal');sv.classList.remove('bump');void sv.offsetWidth;sv.classList.add('bump');setTimeout(()=>sv.classList.remove('bump'),350);}
+function winEchoStreak(){echoStreak++;if(echoStreak>echoBest)echoBest=echoStreak;saveEchoStreak();bumpEchoStreak();renderEchoStreakUI();}
+function loseEchoStreak(){echoStreak=0;saveEchoStreak();renderEchoStreakUI();}
+renderEchoStreakUI();
+
+function initEcho(){
+  echoTarget=ECHOES[Math.floor(Math.random()*ECHOES.length)];
+  echoGuesses=[];echoGameOver=false;echoUsedNames=new Set();
+  document.getElementById('echoGuessesArea').innerHTML='';
+  document.getElementById('echoBannerArea').innerHTML='';
+  echoSearchInput.disabled=false;echoSearchInput.value='';echoDropdown.style.display='none';
+  renderEchoDots();
+}
+
+function renderEchoDots(){
+  document.getElementById('echoAttDots').innerHTML=
+    Array.from({length:ECHO_MAX},(_,i)=>`<div class="att-dot" id="ed${i}"></div>`).join('');
+}
+function setEchoDot(i,cls){const d=document.getElementById('ed'+i);if(d)d.className='att-dot '+cls;}
+
+function compareEcho(g){
+  const res={};
+  ECHO_COLS.forEach(k=>{
+    const gk = k==='cls' ? g.cls : g[k];
+    const tk = k==='cls' ? echoTarget.cls : echoTarget[k];
+    res[k]={val:gk, status: gk===tk ? 'correct' : 'wrong'};
+  });
+  return res;
+}
+
+function renderEchoGuessRow(g, res){
+  const area = document.getElementById('echoGuessesArea');
+  const row  = document.createElement('div'); row.className='echo-guess-row';
+  row.style.cssText='display:grid;grid-template-columns:160px repeat(4,minmax(110px,1fr));gap:5px;min-width:680px;animation:rowIn 0.3s ease both;';
+
+  // Name cell
+  const nc=document.createElement('div');nc.className='g-name';nc.textContent=g.name;row.appendChild(nc);
+
+  // Data cells
+  ECHO_COLS.forEach((k,i)=>{
+    const r=res[k];
+    const cell=document.createElement('div');
+    cell.className=`g-cell ${r.status}`;
+    cell.style.animation=`flip 0.35s ${0.04+(i*0.08)}s ease both`;
+    if(k==='attribute'){
+      const color=EL_COLORS[r.val]||'#fff';
+      cell.innerHTML=`<span class="cell-val" style="color:${color};font-weight:700">${r.val}</span>`;
+    } else {
+      cell.innerHTML=`<span class="cell-val">${r.val}</span>`;
+    }
+    row.appendChild(cell);
+  });
+  area.appendChild(row);
+}
+
+function submitEchoGuess(echo){
+  if(echoGameOver||echoUsedNames.has(echo.name))return;
+  echoUsedNames.add(echo.name);
+  const res=compareEcho(echo);
+  echoGuesses.push(echo);
+  renderEchoGuessRow(echo,res);
+  const won=ECHO_COLS.every(k=>res[k].status==='correct');
+  setEchoDot(echoGuesses.length-1, won?'correct':'used');
+  if(won){winEchoStreak();echoGameOver=true;showEchoBanner(true);return;}
+  if(echoGuesses.length>=ECHO_MAX){loseEchoStreak();setEchoDot(echoGuesses.length-1,'fail');echoGameOver=true;showEchoBanner(false);}
+}
+
+function showEchoBanner(won){
+  echoSearchInput.disabled=true;echoDropdown.style.display='none';
+  const color=EL_COLORS[echoTarget.attribute]||'#fff';
+  document.getElementById('echoBannerArea').innerHTML=won
+    ?`<div class="banner"><div class="banner-icon">✨</div>
+       <div class="banner-title">Correct!</div>
+       <div class="banner-sub">You found <strong>${echoTarget.name}</strong> in ${echoGuesses.length} attempt${echoGuesses.length!==1?'s':''}!
+         ${echoStreak>1?`<br><span style="color:var(--gold)">🔥 ${echoStreak} in a row!</span>`:''}</div>
+       <button class="new-btn" onclick="initEcho()">New Echo</button></div>`
+    :`<div class="banner"><div class="banner-icon">💔</div>
+       <div class="banner-title">Out of Attempts</div>
+       <div class="banner-sub">The answer was <strong>${echoTarget.name}</strong><br>
+         <span style="color:${color}">${echoTarget.attribute}</span> · ${echoTarget.type} · ${echoTarget.cls} · ${echoTarget.region}<br>
+         <span style="color:var(--red)">Streak reset</span></div>
+       <button class="new-btn" onclick="initEcho()">Try Again</button></div>`;
+}
+
+// Echo search
+const echoSearchInput=document.getElementById('echoSearchInput');
+const echoDropdown=document.getElementById('echoDropdown');
+function renderEchoDropdown(){
+  const q=echoSearchInput.value.trim().toLowerCase();
+  const matches=ECHOES.filter(e=>e.name.toLowerCase().includes(q));
+  if(!matches.length){echoDropdown.style.display='none';return;}
+  echoDropdown.innerHTML=matches.map(e=>{
+    const color=EL_COLORS[e.attribute]||'#fff';
+    const used=echoUsedNames.has(e.name);
+    return `<div class="dd-item${used?' used':''}" data-name="${e.name.replace(/"/g,'&quot;')}">
+      <div class="el-dot" style="background:#4a4a5a"></div>
+      <span class="dd-name">${e.name}</span>
+      <span class="dd-sub">${e.cls} · ${e.region}</span>
+    </div>`;
+  }).join('');
+  echoDropdown.querySelectorAll('.dd-item:not(.used)').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const echo=ECHOES.find(e=>e.name===item.dataset.name);
+      if(echo){submitEchoGuess(echo);echoSearchInput.value='';echoDropdown.style.display='none';echoSearchInput.focus();}
+    });
+  });
+  echoDropdown.style.display='';
+}
+echoSearchInput.addEventListener('focus', renderEchoDropdown);
+echoSearchInput.addEventListener('input', renderEchoDropdown);
+echoSearchInput.addEventListener('keydown',e=>{
+  if(e.key==='Escape')echoDropdown.style.display='none';
+  if(e.key==='Enter'){const f=echoDropdown.querySelector('.dd-item:not(.used)');if(f)f.click();}
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#page-echo .search-wrap'))echoDropdown.style.display='none';
+});
+
+initTimeline();
+initQuiz();
+initEcho();
+
+</script>
+
+<!-- PAGE 5: ECHO QUIZ -->
+<div class="page" id="page-echoquiz">
+  <div class="qz-wrap">
+    <div class="qz-streak-bar">
+      <div class="streak-stat">
+        <span class="streak-val" id="eqStreakVal">0</span>
+        <span class="streak-label">Streak</span>
+        <span class="streak-fire" id="eqStreakFire">🔥</span>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-stat">
+        <span class="streak-val" id="eqBestVal">0</span>
+        <span class="streak-label">Best</span>
+      </div>
+    </div>
+    <div class="eq-mode-selector">
+      <button class="eq-mode-btn active" id="eqModeMultiple" onclick="setEqMode('multiple')">🎯 Multiple Choice</button>
+      <button class="eq-mode-btn" id="eqModeFill"     onclick="setEqMode('fill')">✏️ Fill in the Blank</button>
+      <button class="eq-mode-btn" id="eqModeMixed"    onclick="setEqMode('mixed')">&#x2728; Mixed</button>
+    </div>
+    <div class="eq-mode-desc" id="eqModeDesc">Pick the correct answer from 5 options</div>
+    <div class="qz-card" id="eqCard">
+      <div class="qz-type-badge" id="eqQTypeBadge">Echo Quiz</div>
+      <div class="qz-skill-name" id="eqQuestion" style="font-size:clamp(1rem,2.5vw,1.4rem);"></div>
+      <div id="eqFillWrap" style="display:none;margin-top:16px;">
+        <div class="search-wrap" style="max-width:360px;margin:0 auto;">
+          <input class="search-input" id="eqFillInput" type="text" placeholder="Type an enemy name..." autocomplete="off"/>
+          <div class="dropdown" id="eqFillDropdown" style="display:none;max-height:180px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="qz-choices" id="eqChoices" style="gap:8px;"></div>
+    <div class="qz-feedback" id="eqFeedback"></div>
+  </div>
+</div>
+
+<!-- PAGE 6: WORD HUNT -->
+<div class="page" id="page-wordhunt">
+  <div class="wh-wrap">
+    <div class="wh-topbar">
+      <div class="wh-stats">
+        <div class="wh-stat"><span class="wh-stat-val" id="whFound">0</span><span class="wh-stat-lbl">Found</span></div>
+        <div class="wh-stat"><span class="wh-stat-val" id="whTotal">0</span><span class="wh-stat-lbl">Total</span></div>
+        <div class="wh-stat"><span class="wh-stat-val" id="whTime">0:00</span><span class="wh-stat-lbl">Time</span></div>
+      </div>
+      <button class="new-btn" onclick="initWordHunt()">🔀 New Puzzle</button>
+    </div>
+    <div class="wh-size-selector">
+      <button class="wh-size-btn active" id="whSize20" onclick="setWhSize(20)">20×20 · 10 Words</button>
+      <button class="wh-size-btn"        id="whSize25" onclick="setWhSize(25)">25×25 · 20 Words</button>
+    </div>
+    <div class="wh-words" id="whWordList"></div>
+    <div class="wh-grid-wrap">
+      <div class="wh-grid" id="whGrid"></div>
+    </div>
+    <div id="whComplete" style="display:none"></div>
+  </div>
+</div>
+
+</body>
+<script>
+// ══════════════════════════════════════════
+// PAGE 5 — ECHO QUIZ (runs after DOM ready)
+// ══════════════════════════════════════════
+const EQ_ATTRIBUTES = [...new Set(ECHOES.map(e=>e.attribute))].sort();
+const EQ_REGIONS    = [...new Set(ECHOES.map(e=>e.region))].sort();
+const EQ_CLASSES    = [...new Set(ECHOES.map(e=>e.cls))].sort();
+const EQ_TYPES      = [...new Set(ECHOES.map(e=>e.type))].sort();
+const EQ_NAMES      = ECHOES.map(e=>e.name).sort();
+
+let eqStreak=0,eqBest=0;
+try{eqStreak=parseInt(localStorage.getItem('wuwadle_eq_streak')||'0',10);eqBest=parseInt(localStorage.getItem('wuwadle_eq_best')||'0',10);}catch(e){}
+function saveEqStreak(){try{localStorage.setItem('wuwadle_eq_streak',eqStreak);localStorage.setItem('wuwadle_eq_best',eqBest);}catch(e){}}
+function renderEqStreakUI(){
+  document.getElementById('eqStreakVal').textContent=eqStreak;
+  document.getElementById('eqBestVal').textContent=eqBest;
+  document.getElementById('eqStreakFire').style.display=eqStreak>=2?'block':'none';
+}
+function bumpEqStreak(){const sv=document.getElementById('eqStreakVal');sv.classList.remove('bump');void sv.offsetWidth;sv.classList.add('bump');setTimeout(()=>sv.classList.remove('bump'),350);}
+
+let eqMode = 'multiple';
+const EQ_MODE_DESCS = {
+  multiple: 'Pick the correct answer from 5 options',
+  fill:     'Type an enemy name using the dropdown',
+  mixed:    'Random mix of multiple choice & fill-in-blank',
+};
+function setEqMode(mode){
+  eqMode = mode;
+  ['multiple','fill','mixed'].forEach(m=>{
+    document.getElementById('eqMode'+m.charAt(0).toUpperCase()+m.slice(1)).classList.toggle('active', m===mode);
+  });
+  document.getElementById('eqModeDesc').textContent = EQ_MODE_DESCS[mode];
+  eqStreak=0; saveEqStreak(); renderEqStreakUI();
+  eqNextQuestion();
+}
+
+function makeEqQuestion(){
+  const enemy = ECHOES[Math.floor(Math.random()*ECHOES.length)];
+  function buildChoices(correct, pool){
+    const others = shuffle(pool.filter(x=>x!==correct)).slice(0,4);
+    return shuffle([correct,...others]);
+  }
+  const mcTypes = [
+    ()=>({badge:'Attribute',question:`What is the Attribute of\n${enemy.name}?`,correct:enemy.attribute,choices:buildChoices(enemy.attribute,EQ_ATTRIBUTES),isFill:false}),
+    ()=>({badge:'Region',question:`Which Region does\n${enemy.name}\nbelong to?`,correct:enemy.region,choices:buildChoices(enemy.region,EQ_REGIONS),isFill:false}),
+    ()=>({badge:'Class',question:`What is the Class of\n${enemy.name}?`,correct:enemy.cls,choices:buildChoices(enemy.cls,EQ_CLASSES),isFill:false}),
+    ()=>{
+      const type=enemy.type;
+      const distractors=shuffle(ECHOES.filter(e=>e.type!==type)).slice(0,4).map(e=>e.name);
+      return {badge:'Type',question:`Which enemy has this Type:\n"${type}"?`,correct:enemy.name,choices:shuffle([enemy.name,...distractors]),isFill:false};
+    },
+    ()=>{
+      const attr=enemy.attribute;
+      const distractors=shuffle(ECHOES.filter(e=>e.attribute!==attr)).slice(0,4).map(e=>e.name);
+      return {badge:'Attribute',question:`Which enemy has this Attribute:\n"${attr}"?`,correct:enemy.name,choices:shuffle([enemy.name,...distractors]),isFill:false};
+    },
+  ];
+  const fillTypes = [
+    ()=>({badge:'Fill-In',question:`Name any enemy found in:\n"${enemy.region}"`,correct:ECHOES.filter(e=>e.region===enemy.region).map(e=>e.name),isFill:true}),
+    ()=>({badge:'Fill-In',question:`Name any enemy with Class:\n"${enemy.cls}"`,correct:ECHOES.filter(e=>e.cls===enemy.cls).map(e=>e.name),isFill:true}),
+    ()=>({badge:'Fill-In',question:`Name any enemy with Type:\n"${enemy.type}"`,correct:ECHOES.filter(e=>e.type===enemy.type).map(e=>e.name),isFill:true}),
+    ()=>({badge:'Fill-In',question:`Name any enemy with Attribute:\n"${enemy.attribute}"`,correct:ECHOES.filter(e=>e.attribute===enemy.attribute).map(e=>e.name),isFill:true}),
+  ];
+  const pool = eqMode==='multiple' ? mcTypes : eqMode==='fill' ? fillTypes : [...mcTypes,...fillTypes];
+  return pool[Math.floor(Math.random()*pool.length)]();
+}
+
+let eqCurrent=null, eqAnswered=false;
+
+function initEchoQuiz(){
+  eqAnswered=false;
+  renderEqStreakUI();
+  eqNextQuestion();
+}
+
+function eqNextQuestion(){
+  eqCurrent=makeEqQuestion();
+  eqAnswered=false;
+  document.getElementById('eqQTypeBadge').textContent=eqCurrent.badge+' Quiz';
+  document.getElementById('eqQuestion').innerHTML=eqCurrent.question.replace(/\n/g,'<br>');
+  const fb=document.getElementById('eqFeedback');
+  fb.textContent=''; fb.className='qz-feedback';
+  const choicesEl=document.getElementById('eqChoices');
+  choicesEl.innerHTML='';
+  const fillWrap=document.getElementById('eqFillWrap');
+
+  if(eqCurrent.isFill){
+    fillWrap.style.display='block';
+    choicesEl.style.gridTemplateColumns='1fr';
+    const dd=document.getElementById('eqFillDropdown');
+    dd.style.display='none'; dd.innerHTML='';
+    const btn=document.createElement('button');
+    btn.className='eq-fill-answer-btn'; btn.textContent='Submit Answer';
+    choicesEl.appendChild(btn);
+    // Clone input to remove old listeners
+    const oldInput=document.getElementById('eqFillInput');
+    const freshInput=oldInput.cloneNode(true);
+    freshInput.value=''; freshInput.disabled=false;
+    oldInput.parentNode.replaceChild(freshInput,oldInput);
+    btn.onclick=()=>{const v=freshInput.value.trim();if(v)eqCheckFill(v,btn,freshInput);};
+    function renderDd(){
+      const q=freshInput.value.trim().toLowerCase();
+      const pool=eqCurrent.correct;
+      const matches=q?pool.filter(n=>n.toLowerCase().includes(q)):pool.slice(0,20);
+      if(!matches.length){dd.style.display='none';return;}
+      dd.innerHTML=matches.map(n=>`<div class="dd-item" data-name="${n.replace(/"/g,'&quot;')}">${n}</div>`).join('');
+      dd.querySelectorAll('.dd-item').forEach(item=>item.addEventListener('click',()=>{freshInput.value=item.dataset.name;dd.style.display='none';}));
+      dd.style.display='';
+    }
+    freshInput.addEventListener('focus',renderDd);
+    freshInput.addEventListener('input',renderDd);
+    freshInput.addEventListener('keydown',e=>{
+      if(e.key==='Escape')dd.style.display='none';
+      if(e.key==='Enter'){const f=dd.querySelector('.dd-item');if(f)f.click();else{const v=freshInput.value.trim();if(v)eqCheckFill(v,btn,freshInput);}}
+    });
+  } else {
+    fillWrap.style.display='none';
+    const isNames=(eqCurrent.badge==='Type'||(eqCurrent.badge==='Attribute'&&eqCurrent.question.startsWith('Which enemy')));
+    choicesEl.style.gridTemplateColumns=isNames?'1fr':'1fr 1fr';
+    eqCurrent.choices.forEach(ch=>{
+      const btn=document.createElement('button');
+      btn.className='eq-choice-fill'; btn.textContent=ch;
+      btn.addEventListener('click',()=>eqCheckChoice(ch,btn));
+      choicesEl.appendChild(btn);
+    });
+  }
+  const card=document.getElementById('eqCard');
+  card.style.animation='none';void card.offsetWidth;card.style.animation='cardPop 0.35s cubic-bezier(0.34,1.4,0.64,1) both';
+}
+
+function eqCheckChoice(chosen,btn){
+  if(eqAnswered)return; eqAnswered=true;
+  const correct=chosen===eqCurrent.correct;
+  document.querySelectorAll('#eqChoices .eq-choice-fill').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===eqCurrent.correct)b.classList.add('correct');
+    else if(b===btn&&!correct)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('eqFeedback');
+  if(correct){
+    eqStreak++;if(eqStreak>eqBest)eqBest=eqStreak;saveEqStreak();bumpEqStreak();renderEqStreakUI();
+    fb.textContent='✨ Correct!';fb.className='qz-feedback correct';
+    setTimeout(eqNextQuestion,900);
+  }else{
+    eqStreak=0;saveEqStreak();renderEqStreakUI();
+    fb.textContent=`❌ The answer was: ${eqCurrent.correct}`;fb.className='qz-feedback wrong';
+    setTimeout(eqNextQuestion,1400);
+  }
+}
+
+function eqCheckFill(val,btn,input){
+  if(eqAnswered)return; eqAnswered=true;
+  btn.disabled=true; input.disabled=true;
+  const corrects=Array.isArray(eqCurrent.correct)?eqCurrent.correct:[eqCurrent.correct];
+  const correct=corrects.some(c=>c.toLowerCase()===val.toLowerCase());
+  const fb=document.getElementById('eqFeedback');
+  document.getElementById('eqFillDropdown').style.display='none';
+  if(correct){
+    eqStreak++;if(eqStreak>eqBest)eqBest=eqStreak;saveEqStreak();bumpEqStreak();renderEqStreakUI();
+    fb.textContent=`✨ Correct! "${val}" is valid.`;fb.className='qz-feedback correct';
+    setTimeout(eqNextQuestion,900);
+  }else{
+    eqStreak=0;saveEqStreak();renderEqStreakUI();
+    const example=corrects[Math.floor(Math.random()*corrects.length)];
+    fb.textContent=`❌ Not valid. One answer: "${example}"`;fb.className='qz-feedback wrong';
+    setTimeout(eqNextQuestion,1600);
+  }
+}
+
+initEchoQuiz();
+
+// ══════════════════════════════════════════
+// PAGE 6 — WORD HUNT
+// ══════════════════════════════════════════
+(function(){
+  const DIRS = [
+    [0,1],[0,-1],[1,0],[-1,0],
+    [1,1],[1,-1],[-1,1],[-1,-1]
+  ];
+
+  let whGridSize = 20;
+  let whWordCount = 10;
+
+  window.setWhSize = function(size){
+    whGridSize = size;
+    whWordCount = size === 20 ? 10 : 20;
+    document.getElementById('whSize20').classList.toggle('active', size===20);
+    document.getElementById('whSize25').classList.toggle('active', size===25);
+    initWordHunt();
+  };
+
+  // Build word pool from resonator names (letters only, uppercase, max 20 chars)
+  // Strip anything in parentheses first (e.g. "Rover (Spectro)" → "Rover")
+  // Also handle multi-word names like "Xiangli Yao" → "XIANGLIAY" ... keep as-is letters only
+  const RAW_NAMES = CHARS.map(c=>c.name);
+  const WORD_POOL = [];
+  const seen = new Set();
+  RAW_NAMES.forEach(n=>{
+    // Remove parenthetical suffixes: "Rover (Spectro)" → "Rover"
+    const clean = n.replace(/\s*\(.*?\)\s*/g,'').trim();
+    const key = clean.toUpperCase().replace(/[^A-Z]/g,'');
+    const display = clean;
+    if(key.length>=3 && key.length<=20 && !seen.has(key)){
+      seen.add(key);
+      WORD_POOL.push({display, key});
+    }
+  });
+
+  let grid=[], placed=[], whWords=[], selecting=false, selStart=null, selCells=[];
+  let foundCount=0, timerInterval=null, seconds=0, puzzleDone=false;
+
+  function initWordHunt(){
+    clearInterval(timerInterval);
+    seconds=0; foundCount=0; puzzleDone=false;
+    document.getElementById('whComplete').style.display='none';
+    document.getElementById('whTime').textContent='0:00';
+
+    const GRID_SIZE = whGridSize;
+    const WORD_COUNT = whWordCount;
+
+    // Update grid CSS columns dynamically
+    document.getElementById('whGrid').style.gridTemplateColumns=`repeat(${GRID_SIZE},1fr)`;
+
+    // Pick random words
+    const picked = shuffle([...WORD_POOL]).slice(0, WORD_COUNT);
+    whWords = picked.map((w,i)=>({...w, found:false, colorIdx:i}));
+
+    // Build empty grid
+    grid = Array.from({length:GRID_SIZE},()=>Array(GRID_SIZE).fill(''));
+    placed = [];
+
+    // Place each word
+    whWords.forEach((w,wi)=>{
+      let ok=false;
+      for(let attempt=0;attempt<500&&!ok;attempt++){
+        const dir=DIRS[Math.floor(Math.random()*DIRS.length)];
+        const dr=dir[0],dc=dir[1];
+        const r=Math.floor(Math.random()*GRID_SIZE);
+        const c=Math.floor(Math.random()*GRID_SIZE);
+        const er=r+dr*(w.key.length-1);
+        const ec=c+dc*(w.key.length-1);
+        if(er<0||er>=GRID_SIZE||ec<0||ec>=GRID_SIZE) continue;
+        // Check no conflict
+        let conflict=false;
+        for(let i=0;i<w.key.length;i++){
+          const gr=r+dr*i, gc=c+dc*i;
+          if(grid[gr][gc]!=='' && grid[gr][gc]!==w.key[i]){conflict=true;break;}
+        }
+        if(conflict) continue;
+        // Place
+        for(let i=0;i<w.key.length;i++) grid[r+dr*i][c+dc*i]=w.key[i];
+        placed.push({word:w, r, c, dr, dc});
+        ok=true;
+      }
+    });
+
+    // Fill blanks with random letters
+    const LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for(let r=0;r<GRID_SIZE;r++)
+      for(let c=0;c<GRID_SIZE;c++)
+        if(!grid[r][c]) grid[r][c]=LETTERS[Math.floor(Math.random()*26)];
+
+    renderGrid();
+    renderWordList();
+    document.getElementById('whFound').textContent='0';
+    document.getElementById('whTotal').textContent=whWords.length;
+
+    // Start timer
+    timerInterval=setInterval(()=>{
+      if(puzzleDone){clearInterval(timerInterval);return;}
+      seconds++;
+      const m=Math.floor(seconds/60), s=seconds%60;
+      document.getElementById('whTime').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    },1000);
+  }
+
+  function cellId(r,c){return `whc-${r}-${c}`;}
+
+  function renderGrid(){
+    const GRID_SIZE = whGridSize;
+    const g=document.getElementById('whGrid');
+    g.innerHTML='';
+    for(let r=0;r<GRID_SIZE;r++){
+      for(let c=0;c<GRID_SIZE;c++){
+        const el=document.createElement('div');
+        el.className='wh-cell';
+        el.id=cellId(r,c);
+        el.textContent=grid[r][c];
+        el.dataset.r=r; el.dataset.c=c;
+        el.addEventListener('mousedown',e=>{e.preventDefault();startSel(r,c);});
+        el.addEventListener('mouseover',()=>{if(selecting)extendSel(r,c);});
+        el.addEventListener('mouseup',()=>endSel());
+        el.addEventListener('touchstart',e=>{e.preventDefault();startSel(r,c);},{passive:false});
+        el.addEventListener('touchmove',e=>{
+          e.preventDefault();
+          const t=e.touches[0];
+          const target=document.elementFromPoint(t.clientX,t.clientY);
+          if(target&&target.classList.contains('wh-cell')) extendSel(+target.dataset.r,+target.dataset.c);
+        },{passive:false});
+        el.addEventListener('touchend',()=>endSel());
+        g.appendChild(el);
+      }
+    }
+    document.addEventListener('mouseup',endSel);
+  }
+
+  function renderWordList(){
+    const el=document.getElementById('whWordList');
+    el.innerHTML=whWords.map(w=>`<span class="wh-word${w.found?' found':''}" id="whw-${w.key}">${w.display}</span>`).join('');
+  }
+
+  function startSel(r,c){
+    selecting=true; selStart={r,c}; selCells=[[r,c]];
+    clearHighlight();
+    document.getElementById(cellId(r,c)).classList.add('selecting');
+  }
+
+  function extendSel(r,c){
+    if(!selecting||!selStart) return;
+    clearHighlight();
+    // Determine direction from start to current
+    const dr=Math.sign(r-selStart.r), dc=Math.sign(c-selStart.c);
+    // Only allow straight lines (8 dirs)
+    const adR=Math.abs(r-selStart.r), adC=Math.abs(c-selStart.c);
+    if(dr!==0&&dc!==0&&adR!==adC) return; // not diagonal
+    selCells=[];
+    const steps=Math.max(adR,adC);
+    for(let i=0;i<=steps;i++) selCells.push([selStart.r+dr*i, selStart.c+dc*i]);
+    selCells.forEach(([sr,sc])=>document.getElementById(cellId(sr,sc)).classList.add('selecting'));
+  }
+
+  function endSel(){
+    if(!selecting){return;}
+    selecting=false;
+    if(selCells.length>=3) checkSelection();
+    else clearHighlight();
+    selCells=[];
+  }
+
+  function clearHighlight(){
+    document.querySelectorAll('.wh-cell.selecting').forEach(el=>el.classList.remove('selecting'));
+  }
+
+  function checkSelection(){
+    const word = selCells.map(([r,c])=>grid[r][c]).join('');
+    const wordRev = [...word].reverse().join('');
+    const match = whWords.find(w=>!w.found&&(w.key===word||w.key===wordRev));
+    if(match){
+      match.found=true;
+      foundCount++;
+      document.getElementById('whFound').textContent=foundCount;
+      // Color cells
+      selCells.forEach(([r,c])=>{
+        const el=document.getElementById(cellId(r,c));
+        el.classList.remove('selecting');
+        // Remove old found classes first
+        el.className='wh-cell found found-'+match.colorIdx;
+      });
+      // Mark word in list
+      const wordEl=document.getElementById('whw-'+match.key);
+      if(wordEl) wordEl.classList.add('found');
+      renderWordList();
+      if(foundCount===whWords.length) onComplete();
+    } else {
+      clearHighlight();
+    }
+  }
+
+  function onComplete(){
+    puzzleDone=true;
+    clearInterval(timerInterval);
+    const m=Math.floor(seconds/60), s=seconds%60;
+    const timeStr=`${m}:${s.toString().padStart(2,'0')}`;
+    const el=document.getElementById('whComplete');
+    el.style.display='block';
+    el.innerHTML=`<div class="wh-complete">
+      <div class="banner-icon">🎉</div>
+      <div class="wh-complete-title">Puzzle Complete!</div>
+      <div class="wh-complete-sub">You found all ${whWords.length} resonators in <strong>${timeStr}</strong>!</div>
+      <button class="new-btn" onclick="initWordHunt()">🔀 New Puzzle</button>
+    </div>`;
+  }
+
+  // Expose globally so nav can trigger it
+  window.initWordHunt = initWordHunt;
+
+  // Auto-init when tab is clicked
+  const origSwitch = window.switchPage;
+  window.switchPage = function(id){
+    origSwitch(id);
+    if(id==='wordhunt' && foundCount===0 && !puzzleDone) initWordHunt();
+  };
+})();
+</script>
+</html>
