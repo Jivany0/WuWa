@@ -15,23 +15,53 @@
 body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;min-height:100vh;overflow-x:hidden;}
 
 /* ── HEADER ── */
-header{text-align:center;padding:20px 16px 0;border-bottom:1px solid rgba(212,168,67,0.12);}
+header{text-align:center;padding:20px 16px 14px;position:relative;}
 .logo{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,5vw,2.5rem);font-weight:900;
   background:linear-gradient(135deg,var(--gold) 30%,var(--gold2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   filter:drop-shadow(0 0 16px rgba(212,168,67,0.2));}
 
-/* ── NAV TABS ── */
-.nav-tabs{display:flex;justify-content:center;gap:6px;padding:14px 16px 0;flex-wrap:wrap;}
-.nav-tab{
-  padding:8px 22px;border-radius:8px 8px 0 0;
-  background:transparent;border:1px solid rgba(212,168,67,0.15);border-bottom:none;
-  color:var(--text-dim);font-family:'Lato',sans-serif;font-size:0.8rem;font-weight:700;
-  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
-  transition:all 0.2s;
+/* ── NAV MENU ── */
+.nav-menu-btn{
+  position:absolute;top:50%;right:16px;transform:translateY(-50%);
+  background:var(--surface);border:1px solid rgba(212,168,67,0.25);
+  border-radius:10px;padding:8px 12px;cursor:pointer;
+  display:flex;flex-direction:column;gap:4px;transition:all 0.2s;
 }
-.nav-tab:hover{color:var(--text);background:rgba(212,168,67,0.05);}
-.nav-tab.active{background:var(--surface);border-color:rgba(212,168,67,0.35);color:var(--gold);}
+.nav-menu-btn:hover{border-color:var(--gold);background:rgba(212,168,67,0.08);}
+.nav-menu-btn span{display:block;width:20px;height:2px;background:var(--gold);border-radius:2px;transition:all 0.25s;}
+.nav-menu-btn.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.nav-menu-btn.open span:nth-child(2){opacity:0;}
+.nav-menu-btn.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+
+.nav-current{
+  font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gold);margin-top:6px;opacity:0.8;
+}
+
+.nav-popup-overlay{
+  display:none;position:fixed;inset:0;z-index:99;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);
+  animation:fadeIn 0.15s ease;
+}
+.nav-popup-overlay.open{display:block;}
+.nav-popup{
+  position:absolute;top:70px;right:16px;
+  background:var(--surface2);border:1px solid rgba(212,168,67,0.25);
+  border-radius:14px;padding:8px;min-width:200px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.6);
+  animation:fadeUp 0.2s ease;
+}
+.nav-popup-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;border-radius:10px;cursor:pointer;
+  font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;
+  color:var(--text-dim);transition:all 0.15s;letter-spacing:0.04em;
+  border:1px solid transparent;
+}
+.nav-popup-item:hover{background:rgba(212,168,67,0.08);color:var(--text);}
+.nav-popup-item.active{background:rgba(212,168,67,0.12);border-color:rgba(212,168,67,0.3);color:var(--gold);}
+.nav-popup-item .nav-icon{font-size:1rem;width:22px;text-align:center;}
 
 /* ── STREAK BAR ── */
 .streak-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:10px 16px 0;}
@@ -360,15 +390,22 @@ header{text-align:center;padding:20px 16px 0;border-bottom:1px solid rgba(212,16
 
 <header>
   <div class="logo">WuWa</div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" id="tab-guess"    onclick="switchPage('guess')">🔍 Guess</button>
-    <button class="nav-tab"        id="tab-timeline" onclick="switchPage('timeline')">📅 Timeline</button>
-    <button class="nav-tab"        id="tab-quiz"     onclick="switchPage('quiz')">🎯 Skill Quiz</button>
-    <button class="nav-tab"        id="tab-echo"     onclick="switchPage('echo')">👻 Echo Guess</button>
-    <button class="nav-tab"        id="tab-echoquiz" onclick="switchPage('echoquiz')">🧠 Echo Quiz</button>
-    <button class="nav-tab"        id="tab-wordhunt" onclick="switchPage('wordhunt')">🔎 Word Hunt</button>
-  </div>
+  <div class="nav-current" id="navCurrent">🔍 Guess</div>
+  <button class="nav-menu-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+
+<div class="nav-popup-overlay" id="navOverlay" onclick="closeNavMenu()">
+  <div class="nav-popup" onclick="event.stopPropagation()">
+    <div class="nav-popup-item active" id="tab-guess"    onclick="switchPage('guess')">    <span class="nav-icon">🔍</span>Guess</div>
+    <div class="nav-popup-item"        id="tab-timeline" onclick="switchPage('timeline')"><span class="nav-icon">📅</span>Timeline</div>
+    <div class="nav-popup-item"        id="tab-quiz"     onclick="switchPage('quiz')">    <span class="nav-icon">🎯</span>Skill Quiz</div>
+    <div class="nav-popup-item"        id="tab-echo"     onclick="switchPage('echo')">    <span class="nav-icon">👻</span>Echo Guess</div>
+    <div class="nav-popup-item"        id="tab-echoquiz" onclick="switchPage('echoquiz')"><span class="nav-icon">🧠</span>Echo Quiz</div>
+    <div class="nav-popup-item"        id="tab-wordhunt" onclick="switchPage('wordhunt')"><span class="nav-icon">🔎</span>Word Hunt</div>
+  </div>
+</div>
 
 <!-- PAGE 1: RESONATOR GUESS -->
 <div class="page active" id="page-guess">
@@ -741,11 +778,28 @@ renderStreakUI();
 // ══════════════════════════════════════════
 // PAGE SWITCHING
 // ══════════════════════════════════════════
+const NAV_LABELS = {
+  guess:'🔍 Guess', timeline:'📅 Timeline', quiz:'🎯 Skill Quiz',
+  echo:'👻 Echo Guess', echoquiz:'🧠 Echo Quiz', wordhunt:'🔎 Word Hunt'
+};
+function toggleNavMenu(){
+  const overlay=document.getElementById('navOverlay');
+  const btn=document.getElementById('navMenuBtn');
+  const isOpen=overlay.classList.contains('open');
+  overlay.classList.toggle('open',!isOpen);
+  btn.classList.toggle('open',!isOpen);
+}
+function closeNavMenu(){
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('navMenuBtn').classList.remove('open');
+}
 function switchPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-popup-item').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navCurrent').textContent=NAV_LABELS[id]||id;
+  closeNavMenu();
 }
 
 // ══════════════════════════════════════════
@@ -1476,12 +1530,36 @@ function makeEqQuestion(){
       return {badge:'Attribute',question:`Which enemy has this Attribute:\n"${attr}"?`,correct:enemy.name,choices:shuffle([enemy.name,...distractors]),isFill:false};
     },
   ];
-  const fillTypes = [
-    ()=>({badge:'Fill-In',question:`Name any enemy found in:\n"${enemy.region}"`,correct:ECHOES.filter(e=>e.region===enemy.region).map(e=>e.name),isFill:true}),
-    ()=>({badge:'Fill-In',question:`Name any enemy with Class:\n"${enemy.cls}"`,correct:ECHOES.filter(e=>e.cls===enemy.cls).map(e=>e.name),isFill:true}),
-    ()=>({badge:'Fill-In',question:`Name any enemy with Type:\n"${enemy.type}"`,correct:ECHOES.filter(e=>e.type===enemy.type).map(e=>e.name),isFill:true}),
-    ()=>({badge:'Fill-In',question:`Name any enemy with Attribute:\n"${enemy.attribute}"`,correct:ECHOES.filter(e=>e.attribute===enemy.attribute).map(e=>e.name),isFill:true}),
-  ];
+
+  // ── Fill-in-Blank: random 1, 2, or 3 property combos ──
+  const PROPS = ['attribute','cls','type','region'];
+  function makeFillQuestion(){
+    // Pick 1–3 random properties
+    const count = Math.floor(Math.random()*3)+1;
+    const chosenProps = shuffle([...PROPS]).slice(0,count);
+    // Build filter using enemy's values for those props
+    const filters = chosenProps.map(p=>({prop:p, val:enemy[p]}));
+    // Find all enemies matching ALL filters
+    const valid = ECHOES.filter(e=>filters.every(f=>e[f.prop]===f.val)).map(e=>e.name);
+    // If only 1 valid answer and count>1, retry with fewer props to avoid impossible questions
+    if(valid.length===0) return makeFillQuestion();
+    // Build question text
+    const propLabels = {attribute:'Attribute',cls:'Class',type:'Type',region:'Region'};
+    const parts = filters.map(f=>`<span style="color:var(--gold)">${f.val}</span>`);
+    const conjunction = parts.length===1 ? parts[0]
+      : parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1];
+    const propNames = filters.map(f=>propLabels[f.prop]);
+    const propLabel = propNames.length===1 ? propNames[0]
+      : propNames.slice(0,-1).join(', ')+' & '+propNames[propNames.length-1];
+    return {
+      badge:'Fill-In',
+      question:`Name any enemy with\n${propLabel}:\n${filters.map(f=>`"${f.val}"`).join(' · ')}`,
+      correct: valid,
+      isFill: true,
+    };
+  }
+
+  const fillTypes = [makeFillQuestion];
   const pool = eqMode==='multiple' ? mcTypes : eqMode==='fill' ? fillTypes : [...mcTypes,...fillTypes];
   return pool[Math.floor(Math.random()*pool.length)]();
 }
