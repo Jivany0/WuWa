@@ -1521,8 +1521,8 @@ function eqNextQuestion(){
     btn.onclick=()=>{const v=freshInput.value.trim();if(v)eqCheckFill(v,btn,freshInput);};
     function renderDd(){
       const q=freshInput.value.trim().toLowerCase();
-      const pool=eqCurrent.correct;
-      const matches=q?pool.filter(n=>n.toLowerCase().includes(q)):pool.slice(0,20);
+      const allNames=shuffle(ECHOES.map(e=>e.name));
+      const matches=q?allNames.filter(n=>n.toLowerCase().includes(q)):allNames.slice(0,20);
       if(!matches.length){dd.style.display='none';return;}
       dd.innerHTML=matches.map(n=>`<div class="dd-item" data-name="${n.replace(/"/g,'&quot;')}">${n}</div>`).join('');
       dd.querySelectorAll('.dd-item').forEach(item=>item.addEventListener('click',()=>{freshInput.value=item.dataset.name;dd.style.display='none';}));
