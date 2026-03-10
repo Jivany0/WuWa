@@ -559,7 +559,8 @@ const CHARS = [
   {name:"Lingyang",        rarity:5,element:"Glacio", weapon:"Gauntlets", version:1.0,region:"Huanglong",   flower:"Lanternberry",          boss:"Gold-Dissolving Feather",       overlord:"Impermanence Heron",  calamity:"Jue"},
   {name:"Verina",          rarity:5,element:"Spectro",weapon:"Rectifier", version:1.0,region:"Huanglong",   flower:"Belle Poppy",           boss:"Elegy Tacet Core",              overlord:"Mourning Aix",        calamity:"Bell-Borne Geochelone"},
   {name:"Jinhsi",          rarity:5,element:"Spectro",weapon:"Broadblade",version:1.1,region:"Huanglong",   flower:"Loong's Pearl",         boss:"Elegy Tacet Core",              overlord:"Mourning Aix",        calamity:"Jue"},
-  {name:"Yinlin",          rarity:5,element:"Electro",weapon:"Rectifier", version:1.1,region:"Huanglong",   flower:"Coriolus",              boss:"Group Abomination Tacet Core",  overlord:"Mech Abomination",    calamity:"Dreamless"},
+  {name:Changli,           rarity:5,elemenet:"Fusion",weapon:"sword",version:1.1,region:"Huanglong",        flower:"Pavo Plum",             boss:"Rage Tacet Core",               overlord:"Inferno Rider",       calamity:"Jue"}, 
+  {name:"Yinlin",          rarity:5,element:"Electro",weapon:"Rectifier", version:1.0,region:"Huanglong",   flower:"Coriolus",              boss:"Group Abomination Tacet Core",  overlord:"Mech Abomination",    calamity:"Dreamless"},
   {name:"Zhezhi",          rarity:5,element:"Glacio", weapon:"Rectifier", version:1.2,region:"Huanglong",   flower:"Lanternberry",          boss:"Sound-Keeping Tacet Core",      overlord:"Lampylumen Myriad",   calamity:"Bell-Borne Geochelone"},
   {name:"Xiangli Yao",     rarity:5,element:"Electro",weapon:"Gauntlets", version:1.2,region:"Huanglong",   flower:"Violet Coral",          boss:"Hidden Thunder Tacet Core",     overlord:"Tempest Mephis",      calamity:"Scar"},
   {name:"Shorekeeper",     rarity:5,element:"Spectro",weapon:"Rectifier", version:1.3,region:"Black Shores",flower:"Nova",                  boss:"Topological Confinement",       overlord:"Fallacy of No Return",calamity:"Jue"},
@@ -923,7 +924,7 @@ let tlPool=[],tlBoxes=[],tlQueueIdx=0,tlDone=false;
 
 // Exact banner release order from 1.1 onwards (1.0 chars all share order 0)
 const TL_BANNER_ORDER = [
-  "Jinhsi","Changli","Xiangli Yao","Zhezhi","Shorekeeper","Youhu","Camellya","Lumi",
+  "Jiyan","Yinlin","Jinhsi","Changli","Xiangli Yao","Zhezhi","Shorekeeper","Youhu","Camellya","Lumi",
   "Carlotta","Roccia","Phoebe","Brant","Cantarella","Rover (Aero)","Zani","Ciaccona",
   "Cartethyia","Lupa","Phrolova","Augusta","Iuno","Galbrena","Qiuyuan","Chisa","Buling",
   "Lynae","Mornye","Aemeath","Luuk Herssen"
@@ -1708,7 +1709,7 @@ initEchoQuiz();
 
   // Build word pool from resonator names (letters only, uppercase, max 20 chars)
   // Strip anything in parentheses first (e.g. "Rover (Spectro)" → "Rover")
-  // Also handle multi-word names like "Xiangli Yao" → "XIANGLIAY" ... keep as-is letters only
+  // Also handle multi-word names like "Xiangli Yao" → "XIANGLIYAO" ... keep as-is letters only
   const RAW_NAMES = CHARS.map(c=>c.name);
   const WORD_POOL = [];
   const seen = new Set();
@@ -1910,3 +1911,4 @@ initEchoQuiz();
 })();
 </script>
 </html>
+
