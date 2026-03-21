@@ -1,1 +1,27 @@
 https://game8.co/games/Wuthering-Waves/archives/452489
+
+
+Definition
+-	IPv6 is designed to be the successor to IPv4. IPv6 has a larger 128-bit address space, providing 340 undecillion (i.e., 340 followed by 36 zeroes) possible addresses. However, IPv6 is more than just larger addresses.
+
+Advantages
+-	IPv6 provides a massive amount of address spaces ranging up to 340 undecillion addresses compared to IPv4. It also eliminated the need for NAT and allowing direct end-to-end connectivity.
+-	Almost all devices have different IPv6 addresses.
+
+Disadvantages:
+-	IPv4 and IPv6 cannot communicate directly, requiring transition mechanism.
+-	It seems, it’s also more complex and costly to make than IPv4.
+
+Example of IPv6 implementation - 
+
+
+IPv6	IPv4
+128-bits IP Address
+Alphanumeric Hexadecimal Notations	32-bits IP Address
+Numeric Dot-decimal Notation
+Hexadecimal (0-9, A-F)	Decimal (0-9), represented as 8-bit octets (0-255).
+Four 0–255 numbers	Eight 16-bit segments separated by colons, also accepts double colons (::) for consecutive zeros (0).
+
+
+
+2 Types of IPv6 includes, Global Unicast Addresses (GUA) and Link-Local Addresses (LLA). GUA focuses on Public IPv4 addresses, internet access, the router forwards packets, Automated, prefix range is “2000::/3”, while LLA focuses on MAC addresses/Private Addresses, routing, it does drop router packets, prefix range “FE80::/10”.
