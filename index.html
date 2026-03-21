@@ -384,6 +384,114 @@ header{text-align:center;padding:20px 16px 14px;position:relative;}
 }
 .wh-size-btn:hover{border-color:rgba(212,168,67,0.5);color:var(--text);}
 .wh-size-btn.active{background:rgba(212,168,67,0.12);border-color:var(--gold);color:var(--gold);}
+
+/* ═══════════════════════════════
+   PAGE 7 — ODD ONE OUT
+═══════════════════════════════ */
+.ooo-wrap{max-width:600px;margin:0 auto;padding:6px 6px 60px;}
+.ooo-streak-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:0 0 16px;}
+
+.ooo-category-badge{
+  display:inline-block;font-size:0.58rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;border:1px solid rgba(212,168,67,0.3);
+  color:var(--gold);background:rgba(212,168,67,0.07);margin-bottom:14px;
+  animation:fadeIn 0.3s ease;
+}
+.ooo-category-badge[data-cat="flower"]   {color:#e8a0b0;border-color:rgba(232,160,176,0.35);background:rgba(232,160,176,0.08);}
+.ooo-category-badge[data-cat="echo"]     {color:#a080ff;border-color:rgba(160,128,255,0.35);background:rgba(160,128,255,0.08);}
+.ooo-category-badge[data-cat="calamity"] {color:#f07840;border-color:rgba(240,120,64,0.35); background:rgba(240,120,64,0.08);}
+.ooo-category-badge[data-cat="skill"]    {color:#4ad0c0;border-color:rgba(74,208,192,0.35);background:rgba(74,208,192,0.08);}
+.ooo-category-badge[data-cat="enhanced"] {color:#9070f0;border-color:rgba(144,112,240,0.35);background:rgba(144,112,240,0.08);}
+.ooo-category-badge[data-cat="letter"]   {color:#f0c96a;border-color:rgba(240,201,106,0.35);background:rgba(240,201,106,0.08);}
+.ooo-category-badge[data-cat="element"]  {color:#4ad0c0;border-color:rgba(74,208,192,0.35);background:rgba(74,208,192,0.08);}
+.ooo-category-badge[data-cat="region"]   {color:#3d9966;border-color:rgba(61,153,102,0.35);background:rgba(61,153,102,0.08);}
+.ooo-category-badge[data-cat="weapon"]   {color:#d4a843;border-color:rgba(212,168,67,0.35);background:rgba(212,168,67,0.08);}
+.ooo-category-badge[data-cat="version"]  {color:#bbbbbb;border-color:rgba(187,187,187,0.35);background:rgba(187,187,187,0.08);}
+.ooo-category-badge[data-cat="echoattr"] {color:#70b8f0;border-color:rgba(112,184,240,0.35);background:rgba(112,184,240,0.08);}
+
+.ooo-progress{font-size:0.65rem;color:var(--text-dim);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:18px;animation:fadeIn 0.3s ease;}
+
+.ooo-tiles{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:22px;
+}
+.ooo-tile{
+  position:relative;overflow:hidden;
+  padding:22px 16px 18px;border-radius:14px;
+  background:var(--surface2);border:2px solid rgba(212,168,67,0.12);
+  color:var(--text);font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:700;
+  cursor:pointer;text-align:center;line-height:1.3;
+  transition:border-color 0.15s,background 0.15s,transform 0.12s,box-shadow 0.15s;
+  animation:tileIn 0.35s cubic-bezier(0.34,1.4,0.64,1) both;
+  min-height:72px;display:flex;align-items:center;justify-content:center;
+}
+.ooo-tile:nth-child(1){animation-delay:0.03s;}
+.ooo-tile:nth-child(2){animation-delay:0.08s;}
+.ooo-tile:nth-child(3){animation-delay:0.13s;}
+.ooo-tile:nth-child(4){animation-delay:0.18s;}
+@keyframes tileIn{from{opacity:0;transform:scale(0.82) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.ooo-tile:hover:not(.locked){
+  border-color:rgba(212,168,67,0.55);background:rgba(212,168,67,0.07);
+  transform:translateY(-2px);box-shadow:0 6px 22px rgba(212,168,67,0.12);
+}
+.ooo-tile.locked{cursor:default;}
+.ooo-tile.correct{
+  border-color:rgba(61,153,102,0.7)!important;
+  background:rgba(61,153,102,0.14)!important;
+  color:#6ed4a0;box-shadow:0 0 18px rgba(61,153,102,0.2)!important;
+  animation:correctPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
+.ooo-tile.wrong{
+  border-color:rgba(176,64,64,0.65)!important;
+  background:rgba(176,64,64,0.12)!important;
+  color:#e08080;box-shadow:0 0 14px rgba(176,64,64,0.15)!important;
+  animation:shake 0.35s ease both;
+}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.ooo-tile.dim{opacity:0.35;border-color:rgba(255,255,255,0.05)!important;color:var(--text-dim);}
+.ooo-tile-label{
+  position:absolute;top:7px;right:9px;font-size:0.52rem;font-weight:700;letter-spacing:0.12em;
+  text-transform:uppercase;opacity:0;transition:opacity 0.3s;color:var(--gold);
+}
+.ooo-tile.correct .ooo-tile-label,.ooo-tile.wrong .ooo-tile-label{opacity:1;}
+
+.ooo-reason{
+  text-align:center;font-size:0.82rem;color:var(--text-dim);line-height:1.6;
+  min-height:24px;margin-bottom:14px;font-style:italic;
+  animation:fadeUp 0.3s ease;padding:0 4px;
+}
+.ooo-reason strong{color:var(--text);font-style:normal;}
+
+/* ── Timer ring ── */
+.ooo-timer-wrap{
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;position:relative;
+}
+.ooo-timer-svg{transform:rotate(-90deg);overflow:visible;}
+.ooo-timer-bg{fill:none;stroke:rgba(212,168,67,0.1);stroke-width:4;}
+.ooo-timer-ring{
+  fill:none;stroke:var(--gold);stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:219.9;stroke-dashoffset:0;
+}
+.ooo-timer-ring.danger{stroke:#e05050;}
+.ooo-timer-num{
+  position:absolute;
+  font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;
+  background:linear-gradient(135deg,var(--gold) 30%,var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;
+}
+.ooo-timer-num.danger{
+  background:none;-webkit-text-fill-color:#e05050;color:#e05050;
+  animation:timerPulse 0.5s ease infinite alternate;
+}
+@keyframes timerPulse{from{transform:scale(1)}to{transform:scale(1.18)}}
+.ooo-tiles.pressure .ooo-tile:not(.locked){
+  border-color:rgba(224,80,80,0.3);
+  box-shadow:0 0 12px rgba(224,80,80,0.1);
+}
 </style>
 </head>
 <body>
@@ -404,6 +512,7 @@ header{text-align:center;padding:20px 16px 14px;position:relative;}
     <div class="nav-popup-item"        id="tab-echo"     onclick="switchPage('echo')">    <span class="nav-icon">👻</span>Echo Guess</div>
     <div class="nav-popup-item"        id="tab-echoquiz" onclick="switchPage('echoquiz')"><span class="nav-icon">🧠</span>Echo Quiz</div>
     <div class="nav-popup-item"        id="tab-wordhunt" onclick="switchPage('wordhunt')"><span class="nav-icon">🔎</span>Word Hunt</div>
+    <div class="nav-popup-item"        id="tab-oddoneout" onclick="switchPage('oddoneout')"><span class="nav-icon">🃏</span>Odd One Out</div>
   </div>
 </div>
 
@@ -782,7 +891,8 @@ renderStreakUI();
 // ══════════════════════════════════════════
 const NAV_LABELS = {
   guess:'🔍 Guess', timeline:'📅 Timeline', quiz:'🎯 Skill Quiz',
-  echo:'👻 Echo Guess', echoquiz:'🧠 Echo Quiz', wordhunt:'🔎 Word Hunt'
+  echo:'👻 Echo Guess', echoquiz:'🧠 Echo Quiz', wordhunt:'🔎 Word Hunt',
+  oddoneout:'🃏 Odd One Out'
 };
 function toggleNavMenu(){
   const overlay=document.getElementById('navOverlay');
@@ -1492,6 +1602,37 @@ initEcho();
   </div>
 </div>
 
+<!-- PAGE 7: ODD ONE OUT -->
+<div class="page" id="page-oddoneout">
+  <div class="ooo-wrap">
+    <div class="ooo-streak-bar">
+      <div class="streak-stat">
+        <span class="streak-val" id="oooStreakVal">0</span>
+        <span class="streak-label">Streak</span>
+        <span class="streak-fire" id="oooStreakFire">🔥</span>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-stat">
+        <span class="streak-val" id="oooBestVal">0</span>
+        <span class="streak-label">Best</span>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <div class="ooo-category-badge" id="oooBadge">–</div>
+      <div class="ooo-progress" id="oooProgress"></div>
+    </div>
+    <div class="ooo-timer-wrap">
+      <svg class="ooo-timer-svg" width="76" height="76" viewBox="0 0 76 76">
+        <circle class="ooo-timer-bg" cx="38" cy="38" r="35"/>
+        <circle class="ooo-timer-ring" id="oooTimerRing" cx="38" cy="38" r="35"/>
+      </svg>
+      <span class="ooo-timer-num" id="oooTimerNum">30</span>
+    </div>
+    <div class="ooo-tiles" id="oooTiles"></div>
+    <div class="ooo-reason" id="oooReason"></div>
+  </div>
+</div>
+
 </body>
 <script>
 // ══════════════════════════════════════════
@@ -1909,6 +2050,446 @@ initEchoQuiz();
     origSwitch(id);
     if(id==='wordhunt' && foundCount===0 && !puzzleDone) initWordHunt();
   };
+})();
+</script>
+<script>
+// ══════════════════════════════════════════
+// PAGE 7 — ODD ONE OUT
+// ══════════════════════════════════════════
+(function(){
+
+  // ── Streak ──────────────────────────────
+  let oooStreak=0,oooBest=0;
+  try{oooStreak=parseInt(localStorage.getItem('wuwadle_ooo_streak')||'0',10);oooBest=parseInt(localStorage.getItem('wuwadle_ooo_best')||'0',10);}catch(e){}
+  function saveOooStreak(){try{localStorage.setItem('wuwadle_ooo_streak',oooStreak);localStorage.setItem('wuwadle_ooo_best',oooBest);}catch(e){}}
+  function renderOooStreak(){
+    document.getElementById('oooStreakVal').textContent=oooStreak;
+    document.getElementById('oooBestVal').textContent=oooBest;
+    document.getElementById('oooStreakFire').style.display=oooStreak>=2?'block':'none';
+  }
+  function bumpOoo(){const sv=document.getElementById('oooStreakVal');sv.classList.remove('bump');void sv.offsetWidth;sv.classList.add('bump');setTimeout(()=>sv.classList.remove('bump'),350);}
+  function winOoo(){oooStreak++;if(oooStreak>oooBest)oooBest=oooStreak;saveOooStreak();bumpOoo();renderOooStreak();}
+  function loseOoo(){oooStreak=0;saveOooStreak();renderOooStreak();}
+  renderOooStreak();
+
+  let oooAnswered = false;
+
+  // ── Question generators ──────────────────
+
+  // 1. FLOWER REGION — 3 flowers from same region, 1 from another
+  function genFlower(){
+    const regionMap = {};
+    CHARS.forEach(c=>{
+      if(!c.flower||c.flower==='Unknown') return;
+      if(!regionMap[c.region]) regionMap[c.region]=new Set();
+      regionMap[c.region].add(c.flower);
+    });
+    const regions = Object.keys(regionMap).filter(r=>regionMap[r].size>=3 && r!=='Unknown');
+    const mainRegion = regions[Math.floor(Math.random()*regions.length)];
+    const mainFlowers = shuffle([...regionMap[mainRegion]]);
+    const three = mainFlowers.slice(0,3);
+    // odd flower from a different region
+    const otherRegions = regions.filter(r=>r!==mainRegion);
+    const otherRegion = otherRegions[Math.floor(Math.random()*otherRegions.length)];
+    const otherFlowers = [...regionMap[otherRegion]].filter(f=>!three.includes(f));
+    if(!otherFlowers.length) return null;
+    const odd = otherFlowers[Math.floor(Math.random()*otherFlowers.length)];
+    return {
+      cat:'flower', catLabel:'Flowers',
+      items: shuffle([...three, odd]),
+      odd,
+      reason: `<strong>${odd}</strong> is a flower from <strong>${otherRegion}</strong>, not ${mainRegion}.`
+    };
+  }
+
+  // 2. ECHO ATTRIBUTE — 3 echoes sharing attribute, 1 different
+  function genEchoAttr(){
+    const attrs = [...new Set(ECHOES.map(e=>e.attribute))];
+    const mainAttr = attrs[Math.floor(Math.random()*attrs.length)];
+    const pool = ECHOES.filter(e=>e.attribute===mainAttr);
+    if(pool.length<3) return null;
+    const three = shuffle(pool).slice(0,3).map(e=>e.name);
+    const oddPool = ECHOES.filter(e=>e.attribute!==mainAttr);
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'echoattr', catLabel:'Echo Attribute',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is <strong>${odd.attribute}</strong>, not ${mainAttr}.`
+    };
+  }
+
+  // 3. ECHO CLASS — 3 echoes of same class, 1 different
+  function genEchoClass(){
+    const classes = [...new Set(ECHOES.map(e=>e.cls))];
+    const mainCls = classes[Math.floor(Math.random()*classes.length)];
+    const pool = ECHOES.filter(e=>e.cls===mainCls);
+    if(pool.length<3) return null;
+    const three = shuffle(pool).slice(0,3).map(e=>e.name);
+    const oddPool = ECHOES.filter(e=>e.cls!==mainCls);
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'echo', catLabel:'Echo Class',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is a <strong>${odd.cls}</strong>, not ${mainCls}.`
+    };
+  }
+
+  // 4. ECHO TYPE — 3 echoes of same type, 1 different
+  function genEchoType(){
+    const types = [...new Set(ECHOES.map(e=>e.type))].filter(t=>t!=='Unknown');
+    const mainType = types[Math.floor(Math.random()*types.length)];
+    const pool = ECHOES.filter(e=>e.type===mainType);
+    if(pool.length<3) return null;
+    const three = shuffle(pool).slice(0,3).map(e=>e.name);
+    const oddPool = ECHOES.filter(e=>e.type!==mainType && e.type!=='Unknown');
+    if(!oddPool.length) return null;
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'echo', catLabel:'Echo Type',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is a <strong>${odd.type}</strong>, not ${mainType}.`
+    };
+  }
+
+  // 5. ECHO REGION — 3 echoes from same region, 1 from another
+  function genEchoRegion(){
+    const regions = [...new Set(ECHOES.map(e=>e.region))];
+    const mainReg = regions[Math.floor(Math.random()*regions.length)];
+    const pool = ECHOES.filter(e=>e.region===mainReg);
+    if(pool.length<3) return null;
+    const three = shuffle(pool).slice(0,3).map(e=>e.name);
+    const oddPool = ECHOES.filter(e=>e.region!==mainReg);
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'region', catLabel:'Echo Region',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is from <strong>${odd.region}</strong>, not ${mainReg}.`
+    };
+  }
+
+  // 6. CALAMITY BOSS MATERIAL — 3 chars sharing calamity, 1 different
+  function genCalamity(){
+    const calMap = {};
+    CHARS.forEach(c=>{
+      if(c.calamity==='Unknown') return;
+      if(!calMap[c.calamity]) calMap[c.calamity]=[];
+      calMap[c.calamity].push(c.name);
+    });
+    const valid = Object.entries(calMap).filter(([k,v])=>v.length>=3);
+    if(!valid.length) return null;
+    const [mainCal, mainPool] = valid[Math.floor(Math.random()*valid.length)];
+    const three = shuffle(mainPool).slice(0,3);
+    const oddPool = CHARS.filter(c=>c.calamity!==mainCal && c.calamity!=='Unknown');
+    if(!oddPool.length) return null;
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'calamity', catLabel:'Calamity Boss',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> uses <strong>${odd.calamity}</strong>, not ${mainCal}.`
+    };
+  }
+
+  // 7. ENHANCED SKILL — 3 chars that DO have an enhanced skill, 1 that doesn't (or vice versa)
+  function genEnhanced(){
+    const hasEnhanced = new Set(SKILLS.filter(s=>s.type==='Enhanced Skill').map(s=>s.char));
+    // Flip a coin: show 3 with enhanced + 1 without, or 3 without + 1 with
+    const flip = Math.random()<0.5;
+    const groupA = CHARS.filter(c=>hasEnhanced.has(c.name)).map(c=>c.name);
+    const groupB = CHARS.filter(c=>!hasEnhanced.has(c.name)).map(c=>c.name);
+    const majority = flip ? groupA : groupB;
+    const minority = flip ? groupB : groupA;
+    if(majority.length<3||!minority.length) return null;
+    const three = shuffle(majority).slice(0,3);
+    const odd = shuffle(minority)[0];
+    return {
+      cat:'enhanced', catLabel:'Enhanced Skill',
+      items: shuffle([...three, odd]),
+      odd,
+      reason: flip
+        ? `<strong>${odd}</strong> has <strong>no Enhanced Skill</strong>. The others do.`
+        : `<strong>${odd}</strong> <strong>has an Enhanced Skill</strong>. The others don't.`
+    };
+  }
+
+  // 8. SKILL BELONGS — 3 real skills of a character, 1 from another character
+  function genSkill(){
+    const chars = [...new Set(SKILLS.map(s=>s.char))];
+    const mainChar = chars[Math.floor(Math.random()*chars.length)];
+    const mySkills = SKILLS.filter(s=>s.char===mainChar);
+    if(mySkills.length<3) return null;
+    const three = shuffle(mySkills).slice(0,3).map(s=>s.skill);
+    // odd skill from another char, different skill name
+    const otherSkills = SKILLS.filter(s=>s.char!==mainChar && !three.includes(s.skill));
+    if(!otherSkills.length) return null;
+    const oddSkill = otherSkills[Math.floor(Math.random()*otherSkills.length)];
+    return {
+      cat:'skill', catLabel:`${mainChar}'s Skills`,
+      items: shuffle([...three, oddSkill.skill]),
+      odd: oddSkill.skill,
+      reason: `<strong>${oddSkill.skill}</strong> belongs to <strong>${oddSkill.char}</strong>, not ${mainChar}.`
+    };
+  }
+
+  // 9. CHARACTER ELEMENT — 3 chars same element, 1 different
+  function genElement(){
+    const elMap = {};
+    CHARS.forEach(c=>{if(!elMap[c.element])elMap[c.element]=[];elMap[c.element].push(c.name);});
+    const valid = Object.entries(elMap).filter(([,v])=>v.length>=3);
+    const [mainEl, mainPool] = valid[Math.floor(Math.random()*valid.length)];
+    const three = shuffle(mainPool).slice(0,3);
+    const oddPool = CHARS.filter(c=>c.element!==mainEl);
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    const color = EL_COLORS[mainEl]||'var(--gold)';
+    return {
+      cat:'element', catLabel:'Element',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is <strong style="color:${EL_COLORS[odd.element]||'#fff'}">${odd.element}</strong>, not <span style="color:${color}">${mainEl}</span>.`
+    };
+  }
+
+  // 10. CHARACTER WEAPON — 3 chars same weapon, 1 different
+  function genWeapon(){
+    const wMap = {};
+    CHARS.forEach(c=>{if(!wMap[c.weapon])wMap[c.weapon]=[];wMap[c.weapon].push(c.name);});
+    const valid = Object.entries(wMap).filter(([,v])=>v.length>=3);
+    const [mainW, mainPool] = valid[Math.floor(Math.random()*valid.length)];
+    const three = shuffle(mainPool).slice(0,3);
+    const oddPool = CHARS.filter(c=>c.weapon!==mainW);
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'weapon', catLabel:'Weapon Type',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> wields a <strong>${odd.weapon}</strong>, not ${mainW}.`
+    };
+  }
+
+  // 11. CHARACTER REGION — 3 chars same region, 1 different
+  function genRegion(){
+    const rMap = {};
+    CHARS.forEach(c=>{if(c.region==='Unknown') return;if(!rMap[c.region])rMap[c.region]=[];rMap[c.region].push(c.name);});
+    const valid = Object.entries(rMap).filter(([,v])=>v.length>=3);
+    const [mainR, mainPool] = valid[Math.floor(Math.random()*valid.length)];
+    const three = shuffle(mainPool).slice(0,3);
+    const oddPool = CHARS.filter(c=>c.region!==mainR && c.region!=='Unknown');
+    if(!oddPool.length) return null;
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'region', catLabel:'Character Region',
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is from <strong>${odd.region}</strong>, not ${mainR}.`
+    };
+  }
+
+  // 12. LETTER — 3 resonator names containing a letter, 1 that doesn't
+  function genLetter(){
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const allNames = CHARS.map(c=>c.name);
+    // Try random letters until we find one with enough matches and enough non-matches
+    for(let attempt=0; attempt<40; attempt++){
+      const letter = letters[Math.floor(Math.random()*letters.length)];
+      const has    = allNames.filter(n=>n.toUpperCase().includes(letter));
+      const hasNot = allNames.filter(n=>!n.toUpperCase().includes(letter));
+      if(has.length<3||!hasNot.length) continue;
+      const three = shuffle(has).slice(0,3);
+      const odd   = shuffle(hasNot)[0];
+      return {
+        cat:'letter', catLabel:`Contains "${letter}"`,
+        items: shuffle([...three, odd]),
+        odd,
+        reason: `<strong>${odd}</strong> does not contain the letter <strong>${letter}</strong>.`
+      };
+    }
+    return null;
+  }
+
+  // 13. VERSION GROUP — 3 chars from same major version, 1 from different
+  function genVersion(){
+    const vMap = {};
+    CHARS.forEach(c=>{
+      const major = Math.floor(c.version);
+      if(!vMap[major]) vMap[major]=[];
+      vMap[major].push(c.name);
+    });
+    const valid = Object.entries(vMap).filter(([,v])=>v.length>=3);
+    const [mainV, mainPool] = valid[Math.floor(Math.random()*valid.length)];
+    const three = shuffle(mainPool).slice(0,3);
+    const oddPool = CHARS.filter(c=>Math.floor(c.version)!==parseInt(mainV));
+    if(!oddPool.length) return null;
+    const odd = oddPool[Math.floor(Math.random()*oddPool.length)];
+    return {
+      cat:'version', catLabel:`Version ${mainV}.x Characters`,
+      items: shuffle([...three, odd.name]),
+      odd: odd.name,
+      reason: `<strong>${odd.name}</strong> is from version <strong>${odd.version.toFixed(1)}</strong>, not v${mainV}.x.`
+    };
+  }
+
+  // ── Generator pool with weights ──────────
+  const GEN_POOL = [
+    genFlower, genFlower,
+    genEchoAttr, genEchoAttr,
+    genEchoClass,
+    genEchoType,
+    genEchoRegion,
+    genCalamity, genCalamity,
+    genEnhanced, genEnhanced,
+    genSkill, genSkill, genSkill,
+    genElement, genElement,
+    genWeapon, genWeapon,
+    genRegion, genRegion,
+    genLetter, genLetter,
+    genVersion,
+  ];
+
+  let oooQ = null, oooRoundNum = 0;
+
+  function oooMakeQuestion(){
+    let q = null;
+    for(let i=0; i<30 && !q; i++){
+      const fn = GEN_POOL[Math.floor(Math.random()*GEN_POOL.length)];
+      q = fn();
+    }
+    return q;
+  }
+
+  // ── Timer state ──
+  const OOO_TIME = 30;
+  let oooTimerInterval = null, oooTimeLeft = OOO_TIME;
+
+  function oooStartTimer(){
+    clearInterval(oooTimerInterval);
+    oooTimeLeft = OOO_TIME;
+    oooUpdateTimerUI(OOO_TIME);
+    oooTimerInterval = setInterval(()=>{
+      oooTimeLeft--;
+      oooUpdateTimerUI(oooTimeLeft);
+      if(oooTimeLeft <= 0){
+        clearInterval(oooTimerInterval);
+        oooTimeout();
+      }
+    }, 1000);
+  }
+
+  function oooStopTimer(){ clearInterval(oooTimerInterval); }
+
+  function oooUpdateTimerUI(t){
+    const CIRCUMFERENCE = 2 * Math.PI * 35; // ≈ 219.9
+    const ring = document.getElementById('oooTimerRing');
+    const num  = document.getElementById('oooTimerNum');
+    if(!ring||!num) return;
+    const frac = Math.max(0, t / OOO_TIME);
+    ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - frac);
+    num.textContent = t;
+    const danger = t <= 8;
+    ring.classList.toggle('danger', danger);
+    num.classList.toggle('danger', danger);
+    document.getElementById('oooTiles').classList.toggle('pressure', danger && t > 0);
+  }
+
+  function oooTimeout(){
+    if(oooAnswered) return;
+    oooAnswered = true;
+    loseOoo();
+    // Flash + reveal answer
+    const tiles = document.querySelectorAll('.ooo-tile');
+    tiles.forEach(t=>{
+      const label = t.querySelector('.ooo-tile-label');
+      t.classList.add('locked');
+      const isOdd = t.querySelector('span:first-child').textContent === oooQ.odd;
+      if(isOdd){ t.classList.add('correct'); label.textContent = '✓ Odd one out'; }
+      else { t.classList.add('dim'); }
+    });
+    document.getElementById('oooReason').innerHTML = '\u23f0 Time\'s up! ' + oooQ.reason;
+    const badge = document.getElementById('oooBadge');
+    badge.textContent = oooQ.catLabel; badge.dataset.cat = oooQ.cat; badge.style.display='inline-block';
+    document.getElementById('oooProgress').textContent = `Round ${oooRoundNum} · Streak ${oooStreak}`;
+    document.getElementById('oooTiles').classList.remove('pressure');
+    setTimeout(()=>oooRender(oooMakeQuestion()), 2400);
+  }
+
+  function oooRender(q){
+    oooAnswered = false;
+    oooQ = q;
+    oooRoundNum++;
+
+    document.getElementById('oooProgress').textContent =
+      `Round ${oooRoundNum} · Streak ${oooStreak}`;
+
+    document.getElementById('oooReason').innerHTML = '';
+    document.getElementById('oooBadge').style.display = 'none';
+    document.getElementById('oooTiles').classList.remove('pressure');
+
+    const tilesEl = document.getElementById('oooTiles');
+    tilesEl.innerHTML = '';
+    q.items.forEach(item=>{
+      const tile = document.createElement('div');
+      tile.className = 'ooo-tile';
+      tile.innerHTML = `<span>${item}</span><span class="ooo-tile-label"></span>`;
+      tile.addEventListener('click', ()=>oooGuess(item, tile));
+      tilesEl.appendChild(tile);
+    });
+
+    oooStartTimer();
+  }
+
+  function oooGuess(chosen, tileEl){
+    if(oooAnswered) return;
+    oooAnswered = true;
+    oooStopTimer();
+    const correct = chosen === oooQ.odd;
+
+    const tiles = document.querySelectorAll('.ooo-tile');
+    tiles.forEach(t=>{
+      const label = t.querySelector('.ooo-tile-label');
+      t.classList.add('locked');
+      const isOdd = t.querySelector('span:first-child').textContent === oooQ.odd;
+      const isChosen = t === tileEl;
+      if(isOdd){
+        t.classList.add('correct');
+        label.textContent = '✓ Odd one out';
+      } else if(isChosen && !correct){
+        t.classList.add('wrong');
+        label.textContent = '✗ Wrong';
+      } else {
+        t.classList.add('dim');
+      }
+    });
+
+    document.getElementById('oooReason').innerHTML = oooQ.reason;
+    const badge = document.getElementById('oooBadge');
+    badge.textContent = oooQ.catLabel; badge.dataset.cat = oooQ.cat; badge.style.display='inline-block';
+    document.getElementById('oooTiles').classList.remove('pressure');
+
+    if(correct) winOoo();
+    else loseOoo();
+
+    document.getElementById('oooProgress').textContent =
+      `Round ${oooRoundNum} · Streak ${oooStreak}`;
+
+    setTimeout(()=>oooRender(oooMakeQuestion()), correct ? 1400 : 2200);
+  }
+
+  window.initOddOneOut = function(){
+    oooRoundNum = 0;
+    oooRender(oooMakeQuestion());
+  };
+
+  // Hook into page switch
+  const origSwitch2 = window.switchPage;
+  window.switchPage = function(id){
+    origSwitch2(id);
+    if(id==='oddoneout' && oooRoundNum===0) initOddOneOut();
+  };
+
+  renderOooStreak();
 })();
 </script>
 </html>
